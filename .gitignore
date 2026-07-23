@@ -42,6 +42,17 @@ Win32/
 *.temp
 *.cache
 
+# CMake
+build/
+cmake-build-*/
+out/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+compile_commands.json
+CTestTestfile.cmake
+_deps/
+
 # OS junk
 Thumbs.db
 Desktop.ini
