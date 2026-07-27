@@ -1,6 +1,7 @@
 #include "Engine/Renderer/DirectionalShadowPass.h"
 
 #include "Engine/Renderer/Mesh.h"
+#include "Engine/Renderer/Model.h"
 #include "Engine/Renderer/Renderer.h"
 
 #include <glad/glad.h>
@@ -77,6 +78,14 @@ void DirectionalShadowPass::draw(
 
     m_depthShader.setMat4("uModel", modelMatrix);
     Renderer::draw(mesh, m_depthShader);
+}
+
+void DirectionalShadowPass::draw(
+    const Model& model,
+    const glm::mat4& modelMatrix) {
+    for (const ModelPart& part : model.parts()) {
+        draw(part.mesh, modelMatrix);
+    }
 }
 
 void DirectionalShadowPass::end(int viewportWidth, int viewportHeight) {

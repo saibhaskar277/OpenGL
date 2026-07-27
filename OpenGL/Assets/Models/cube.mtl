@@ -1,0 +1,4 @@
+newmtl CubeMaterial
+Kd 1.0 1.0 1.0
+Ks 0.35 0.35 0.35
+Ns 48.0

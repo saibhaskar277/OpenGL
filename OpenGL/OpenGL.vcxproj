@@ -134,15 +134,22 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Core\Window.cpp" />
+    <ClCompile Include="Engine\Renderer\CubemapShadowMap.cpp" />
     <ClCompile Include="Engine\Renderer\DirectionalShadowPass.cpp" />
     <ClCompile Include="Engine\Renderer\FlyCameraController.cpp" />
+    <ClCompile Include="Engine\Renderer\IndexBuffer.cpp" />
+    <ClCompile Include="Engine\Renderer\LightShadowSystem.cpp" />
     <ClCompile Include="Engine\Renderer\Lighting\LightingEnvironment.cpp" />
+    <ClCompile Include="Engine\Renderer\Material.cpp" />
     <ClCompile Include="Engine\Renderer\Mesh.cpp" />
+    <ClCompile Include="Engine\Renderer\Model.cpp" />
     <ClCompile Include="Engine\Renderer\PerspectiveCamera.cpp" />
     <ClCompile Include="Engine\Renderer\PrimitiveFactory.cpp" />
     <ClCompile Include="Engine\Renderer\Renderer.cpp" />
     <ClCompile Include="Engine\Renderer\Shader.cpp" />
     <ClCompile Include="Engine\Renderer\ShadowMap.cpp" />
+    <ClCompile Include="Engine\Renderer\TangentSpace.cpp" />
+    <ClCompile Include="Engine\Renderer\Texture.cpp" />
     <ClCompile Include="Engine\Renderer\VertexArray.cpp" />
     <ClCompile Include="Engine\Renderer\VertexBuffer.cpp" />
     <ClCompile Include="Engine\Scene\Transform.cpp" />
@@ -151,8 +158,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Core\Window.h" />
+    <ClInclude Include="Engine\Renderer\CubemapShadowMap.h" />
     <ClInclude Include="Engine\Renderer\DirectionalShadowPass.h" />
     <ClInclude Include="Engine\Renderer\FlyCameraController.h" />
+    <ClInclude Include="Engine\Renderer\IndexBuffer.h" />
+    <ClInclude Include="Engine\Renderer\LightShadowSystem.h" />
     <ClInclude Include="Engine\Renderer\Lighting\DirectionalLight.h" />
     <ClInclude Include="Engine\Renderer\Lighting\HemisphereLight.h" />
     <ClInclude Include="Engine\Renderer\Lighting\LightingEnvironment.h" />
@@ -160,18 +170,26 @@
     <ClInclude Include="Engine\Renderer\Lighting\SpotLight.h" />
     <ClInclude Include="Engine\Renderer\Material.h" />
     <ClInclude Include="Engine\Renderer\Mesh.h" />
+    <ClInclude Include="Engine\Renderer\Model.h" />
     <ClInclude Include="Engine\Renderer\PerspectiveCamera.h" />
     <ClInclude Include="Engine\Renderer\PrimitiveFactory.h" />
     <ClInclude Include="Engine\Renderer\Renderer.h" />
     <ClInclude Include="Engine\Renderer\Shader.h" />
     <ClInclude Include="Engine\Renderer\ShadowMap.h" />
+    <ClInclude Include="Engine\Renderer\TangentSpace.h" />
+    <ClInclude Include="Engine\Renderer\Texture.h" />
     <ClInclude Include="Engine\Renderer\VertexArray.h" />
     <ClInclude Include="Engine\Renderer\VertexBuffer.h" />
     <ClInclude Include="Engine\Scene\Transform.h" />
+    <ClInclude Include="Dependencies\include\stb\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\Models\cube.mtl" />
+    <None Include="Assets\Models\cube.obj" />
     <None Include="Assets\Shaders\Lit.frag" />
     <None Include="Assets\Shaders\Lit.vert" />
+    <None Include="Assets\Shaders\ShadowCubemap.frag" />
+    <None Include="Assets\Shaders\ShadowCubemap.vert" />
     <None Include="Assets\Shaders\ShadowDepth.frag" />
     <None Include="Assets\Shaders\ShadowDepth.vert" />
     <None Include="Dependencies\GLM-LICENSE.txt" />

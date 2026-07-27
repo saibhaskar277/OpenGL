@@ -33,8 +33,21 @@ void Renderer::drawTriangles(
     glDrawArrays(GL_TRIANGLES, 0, vertexCount);
 }
 
+void Renderer::drawIndexed(
+    const VertexArray& vertexArray,
+    const Shader& shader,
+    int indexCount) {
+    shader.bind();
+    vertexArray.bind();
+    glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, nullptr);
+}
+
 void Renderer::draw(const Mesh& mesh, const Shader& shader) {
-    drawTriangles(mesh.vertexArray(), shader, mesh.vertexCount());
+    if (mesh.indexed()) {
+        drawIndexed(mesh.vertexArray(), shader, mesh.indexCount());
+    } else {
+        drawTriangles(mesh.vertexArray(), shader, mesh.vertexCount());
+    }
 }
 
 } // namespace Engine

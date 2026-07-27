@@ -82,7 +82,7 @@ void Window::pollEvents() const {
 void Window::swapBuffers() const {
     glfwSwapBuffers(m_window);
 }
-
+ 
 void Window::cursorPosition(double& x, double& y) const {
     glfwGetCursorPos(m_window, &x, &y);
 }

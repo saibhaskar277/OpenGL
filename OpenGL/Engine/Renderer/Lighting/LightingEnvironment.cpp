@@ -13,7 +13,15 @@ DirectionalLight& LightingEnvironment::directionalLight() {
     return m_directionalLight;
 }
 
+const DirectionalLight& LightingEnvironment::directionalLight() const {
+    return m_directionalLight;
+}
+
 SpotLight& LightingEnvironment::spotLight() {
+    return m_spotLight;
+}
+
+const SpotLight& LightingEnvironment::spotLight() const {
     return m_spotLight;
 }
 
@@ -21,7 +29,15 @@ HemisphereLight& LightingEnvironment::hemisphereLight() {
     return m_hemisphereLight;
 }
 
+const HemisphereLight& LightingEnvironment::hemisphereLight() const {
+    return m_hemisphereLight;
+}
+
 std::vector<PointLight>& LightingEnvironment::pointLights() {
+    return m_pointLights;
+}
+
+const std::vector<PointLight>& LightingEnvironment::pointLights() const {
     return m_pointLights;
 }
 
@@ -46,6 +62,8 @@ void LightingEnvironment::apply(
     shader.setVec3("uMaterial.albedo", material.albedo);
     shader.setVec3("uMaterial.specularColor", material.specularColor);
     shader.setFloat("uMaterial.shininess", material.shininess);
+    shader.setVec3("uMaterial.emissive", material.emissive);
+    shader.setFloat("uMaterial.ambientOcclusion", material.ambientOcclusion);
 
     shader.setInt("uDirectional.enabled", m_directionalLight.enabled ? 1 : 0);
     shader.setVec3("uDirectional.direction", m_directionalLight.direction);

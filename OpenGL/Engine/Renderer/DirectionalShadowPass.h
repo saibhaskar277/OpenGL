@@ -10,6 +10,7 @@
 namespace Engine {
 
 class Mesh;
+class Model;
 
 class DirectionalShadowPass final {
 public:
@@ -24,6 +25,7 @@ public:
 
     void begin(const glm::vec3& lightDirection, const glm::vec3& sceneCenter);
     void draw(const Mesh& mesh, const glm::mat4& modelMatrix);
+    void draw(const Model& model, const glm::mat4& modelMatrix);
     void end(int viewportWidth, int viewportHeight);
     void bindForLighting(Shader& lightingShader, unsigned int textureUnit) const;
 

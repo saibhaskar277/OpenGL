@@ -1,13 +1,15 @@
 #include "Engine/Core/Window.h"
-#include "Engine/Renderer/DirectionalShadowPass.h"
 #include "Engine/Renderer/FlyCameraController.h"
+#include "Engine/Renderer/LightShadowSystem.h"
 #include "Engine/Renderer/Lighting/LightingEnvironment.h"
 #include "Engine/Renderer/Material.h"
 #include "Engine/Renderer/Mesh.h"
+#include "Engine/Renderer/Model.h"
 #include "Engine/Renderer/PerspectiveCamera.h"
 #include "Engine/Renderer/PrimitiveFactory.h"
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Renderer/Shader.h"
+#include "Engine/Renderer/Texture.h"
 #include "Engine/Scene/Transform.h"
 
 #include <GLFW/glfw3.h>
@@ -18,21 +20,88 @@
 #include <exception>
 #include <iostream>
 
+namespace {
+
+void drawMeshLit(
+    Engine::Shader& shader,
+    Engine::LightingEnvironment& lighting,
+    const Engine::PerspectiveCamera& camera,
+    const Engine::Mesh& mesh,
+    const Engine::Material& material,
+    const glm::mat4& modelMatrix) {
+    shader.setMat4("uModel", modelMatrix);
+    lighting.apply(shader, camera.position(), material);
+    material.bindMaps(shader, 1);
+    Engine::Renderer::draw(mesh, shader);
+}
+
+void drawModelLit(
+    Engine::Shader& shader,
+    Engine::LightingEnvironment& lighting,
+    const Engine::PerspectiveCamera& camera,
+    const Engine::Model& model,
+    const glm::mat4& modelMatrix) {
+    for (const Engine::ModelPart& part : model.parts()) {
+        drawMeshLit(
+            shader,
+            lighting,
+            camera,
+            part.mesh,
+            part.material,
+            modelMatrix);
+    }
+}
+
+} // namespace
+
 int main() {
     try {
         Engine::Window window(800, 600, "Rendering Engine");
         window.setCursorCaptured(true);
 
-        Engine::Mesh cubeMesh = Engine::PrimitiveFactory::createCube();
+        Engine::Model cubeModel = Engine::Model::loadObj("Assets/Models/cube.obj");
+        Engine::Mesh floorMesh = Engine::PrimitiveFactory::createCube();
+
+        auto checkerAlbedo = Engine::Texture::createCheckerboard(256, 32, 210, 55);
+        auto flatNormal = Engine::Texture::createFlatNormal();
+        auto softSpecular = Engine::Texture::createSolid(
+            90,
+            90,
+            90,
+            255,
+            Engine::TextureColorSpace::Linear);
+
+        for (Engine::ModelPart& part : cubeModel.parts()) {
+            if (!part.material.albedoMap) {
+                part.material.albedoMap = checkerAlbedo;
+            }
+            if (!part.material.normalMap) {
+                part.material.normalMap = flatNormal;
+            }
+            if (!part.material.specularMap) {
+                part.material.specularMap = softSpecular;
+            }
+            part.material.albedo = glm::vec3(1.0f, 0.55f, 0.2f);
+            part.material.shininess = 64.0f;
+        }
+
+        Engine::Material floorMaterial;
+        floorMaterial.albedo = glm::vec3(0.75f);
+        floorMaterial.specularColor = glm::vec3(0.2f);
+        floorMaterial.shininess = 24.0f;
+        floorMaterial.albedoMap = Engine::Texture::createCheckerboard(256, 48, 48, 160);
+        floorMaterial.normalMap = flatNormal;
+        floorMaterial.aoMap = Engine::Texture::createSolid(
+            220,
+            220,
+            220,
+            255,
+            Engine::TextureColorSpace::Linear);
 
         Engine::Shader shader(
             "Assets/Shaders/Lit.vert",
             "Assets/Shaders/Lit.frag");
-        Engine::DirectionalShadowPass shadowPass(
-            2048,
-            "Assets/Shaders/ShadowDepth.vert",
-            "Assets/Shaders/ShadowDepth.frag",
-            6.0f);
+        Engine::LightShadowSystem shadows;
 
         Engine::Transform cubeTransform;
         cubeTransform.setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
@@ -41,17 +110,6 @@ int main() {
         Engine::Transform floorTransform;
         floorTransform.setPosition(glm::vec3(0.0f, -1.0f, 0.0f));
         floorTransform.setScale(glm::vec3(8.0f, 0.1f, 8.0f));
-
-        const Engine::Material cubeMaterial{
-            glm::vec3(0.95f, 0.32f, 0.08f),
-            glm::vec3(0.8f),
-            64.0f
-        };
-        const Engine::Material floorMaterial{
-            glm::vec3(0.18f, 0.20f, 0.24f),
-            glm::vec3(0.25f),
-            24.0f
-        };
 
         Engine::PerspectiveCamera camera(45.0f, window.aspectRatio(), 0.1f, 100.0f);
         camera.setPosition(glm::vec3(0.0f, 1.2f, 4.5f));
@@ -106,28 +164,36 @@ int main() {
             lighting.spotLight().position = camera.position();
             lighting.spotLight().direction = camera.forward();
 
-            shadowPass.begin(
-                lighting.directionalLight().direction,
-                glm::vec3(0.0f, -0.25f, 0.0f));
-            shadowPass.draw(cubeMesh, cubeTransform.matrix());
-            shadowPass.draw(cubeMesh, floorTransform.matrix());
-            shadowPass.end(
+            // One submit: shadows for directional + spot + every point light.
+            shadows.render(
+                lighting,
+                glm::vec3(0.0f, -0.25f, 0.0f),
                 window.framebufferWidth(),
-                window.framebufferHeight());
+                window.framebufferHeight(),
+                [&](Engine::LightShadowSystem::CasterDrawer& draw) {
+                    draw(cubeModel, cubeTransform.matrix());
+                    draw(floorMesh, floorTransform.matrix());
+                });
 
             Engine::Renderer::clear();
             shader.bind();
             shader.setMat4("uView", camera.viewMatrix());
             shader.setMat4("uProjection", camera.projectionMatrix());
-            shadowPass.bindForLighting(shader, 0);
+            shadows.bindForLighting(shader);
 
-            shader.setMat4("uModel", cubeTransform.matrix());
-            lighting.apply(shader, camera.position(), cubeMaterial);
-            Engine::Renderer::draw(cubeMesh, shader);
-
-            shader.setMat4("uModel", floorTransform.matrix());
-            lighting.apply(shader, camera.position(), floorMaterial);
-            Engine::Renderer::draw(cubeMesh, shader);
+            drawModelLit(
+                shader,
+                lighting,
+                camera,
+                cubeModel,
+                cubeTransform.matrix());
+            drawMeshLit(
+                shader,
+                lighting,
+                camera,
+                floorMesh,
+                floorMaterial,
+                floorTransform.matrix());
 
             window.swapBuffers();
             window.pollEvents();

@@ -20,9 +20,13 @@ public:
     static constexpr std::size_t MaxPointLights = 4;
 
     [[nodiscard]] DirectionalLight& directionalLight();
+    [[nodiscard]] const DirectionalLight& directionalLight() const;
     [[nodiscard]] SpotLight& spotLight();
+    [[nodiscard]] const SpotLight& spotLight() const;
     [[nodiscard]] HemisphereLight& hemisphereLight();
+    [[nodiscard]] const HemisphereLight& hemisphereLight() const;
     [[nodiscard]] std::vector<PointLight>& pointLights();
+    [[nodiscard]] const std::vector<PointLight>& pointLights() const;
 
     void addPointLight(const PointLight& light);
     void clearPointLights();

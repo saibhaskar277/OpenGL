@@ -6,14 +6,24 @@ Personal C++ / OpenGL sandbox for learning graphics programming — a small engi
 
 ```text
 OpenGL/
-  Engine/          Engine source (window, renderer, camera, lighting, shadows)
+  Engine/          Engine source (window, renderer, camera, lighting, shadows, textures, models)
   Sandbox/         App entry / demos
   Assets/Shaders/  GLSL shaders
+  Assets/Models/   Sample OBJ/MTL models
   Docs/            Learning notes (C++ + OpenGL/GLSL)
-  Dependencies/    Headers (GLM, glad, GLFW) + Windows glfw3.lib for VS
+  Dependencies/    Headers (GLM, glad, GLFW, stb) + Windows glfw3.lib for VS
   OpenGL.sln       Visual Studio solution (Windows convenience)
 CMakeLists.txt     Cross-platform build (Windows / Linux / macOS)
 ```
+
+## Features
+
+- Lighting: directional / point / spot / hemisphere + **shadows for directional, spot, and point lights**
+- Textures: albedo, normal, specular, emissive, AO (`Texture` + `Material` maps)
+- Models: Wavefront OBJ + MTL loading (`Model::loadObj`), including texture maps from MTL
+- Image decode via `stb_image` (PNG/JPG/TGA/BMP/…)
+
+Add a light → it casts shadows automatically when you submit casters to `LightShadowSystem::render` (hemisphere is ambient-only).
 
 ## Docs
 

@@ -17,6 +17,10 @@ public:
         const VertexArray& vertexArray,
         const Shader& shader,
         int vertexCount);
+    static void drawIndexed(
+        const VertexArray& vertexArray,
+        const Shader& shader,
+        int indexCount);
     static void draw(const Mesh& mesh, const Shader& shader);
 };
 
