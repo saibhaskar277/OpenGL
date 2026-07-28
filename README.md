@@ -1,95 +1,91 @@
 # OpenGL Learning Project
 
-Personal C++ / OpenGL sandbox for learning graphics programming — a small engine layer, a sandbox app, shaders, and study notes.
+Small C++ / OpenGL **rendering engine** with a decoupled **ImGui editor**.
 
 ## Layout
 
 ```text
 OpenGL/
-  Engine/          Engine source (window, renderer, camera, lighting, shadows, textures, models)
-  Sandbox/         App entry / demos
-  Assets/Shaders/  GLSL shaders
-  Assets/Models/   Sample OBJ/MTL models
-  Docs/            Learning notes (C++ + OpenGL/GLSL)
-  Dependencies/    Headers (GLM, glad, GLFW, stb) + Windows glfw3.lib for VS
-  OpenGL.sln       Visual Studio solution (Windows convenience)
-CMakeLists.txt     Cross-platform build (Windows / Linux / macOS)
+  Engine/                 Core only (NO ImGui)
+    Core/                 Window, glad
+    Camera/               PerspectiveCamera, FlyCameraController
+    Assets/               AssetManager
+    Scene/                ECS, Scene, SceneRenderer, JSON serializer
+    Renderer/
+      RHI/                buffers, shader, texture, material, draw API
+      Mesh/               Mesh, Model, primitives, tangents
+      Lighting/           directional / point / spot / hemisphere
+      Shadows/            shadow maps + LightShadowSystem
+  Editor/                 ImGui editor (depends on Engine)
+    App/                  EditorApp, EditorLayer, ImGuiLayer
+    Viewport/             picking, gizmo, light debug markers
+    Panels/               Hierarchy, Inspector, Content Browser, Camera
+  Sandbox/src/main.cpp    Thin entry → EditorApp
+  Assets/                 Scenes, Textures, Models, Shaders
+CMakeLists.txt
 ```
 
 ## Features
 
-- Lighting: directional / point / spot / hemisphere + **shadows for directional, spot, and point lights**
-- Textures: albedo, normal, specular, emissive, AO (`Texture` + `Material` maps)
-- Models: Wavefront OBJ + MTL loading (`Model::loadObj`), including texture maps from MTL
-- Image decode via `stb_image` (PNG/JPG/TGA/BMP/…)
+- ECS scene (entities + components)
+- Scene JSON save/load
+- Local asset browser for textures/models
+- Lighting: directional / point / spot / hemisphere
+- Shadows for directional, spot, and point lights
+- Textures: albedo, normal, specular, emissive, AO
+- OBJ/MTL model loading
+- ImGui editor: add cubes, edit transforms/materials/lights, assign textures
 
-Add a light → it casts shadows automatically when you submit casters to `LightShadowSystem::render` (hemisphere is ambient-only).
+## Build (CMake — recommended)
 
-## Docs
+```bash
+cmake -B build
+cmake --build build --config Release
+```
 
-Learning material lives under [`OpenGL/Docs/`](OpenGL/Docs/):
+Run from the output folder (so `Assets/` resolves):
 
-- [C++ Fundamentals](OpenGL/Docs/CPP_Fundamentals.md) — language theory and practice
-- [OpenGL Engine Guide](OpenGL/Docs/OpenGL_Engine_Guide.md) — OpenGL, GLSL, and how this project uses them
+```bash
+./build/Release/OpenGLApp.exe
+```
 
-## Requirements
+## Build (Visual Studio)
 
-- C++17 compiler
-- CMake 3.16+
-- OpenGL 3.3+ capable GPU/driver
-- GLFW: system package if installed, otherwise CMake fetches GLFW 3.4 automatically (needs network on first configure)
+1. Open `OpenGL/OpenGL.sln`
+2. Set **Debug | x64** (or Release)
+3. Build and run (`OpenGL.exe` under `OpenGL/x64/...`)
+
+ImGui and nlohmann/json are vendored under `OpenGL/Dependencies/` for the VS project.
+
+### Dependencies (auto-fetched)
+
+- GLFW (if not installed)
+- Dear ImGui (docking)
+- nlohmann/json
 
 ### Linux packages (example)
 
 ```bash
-# Debian / Ubuntu
 sudo apt install build-essential cmake libgl1-mesa-dev libx11-dev libxrandr-dev libxi-dev libxcursor-dev libxinerama-dev
-
-# Fedora
-sudo dnf install cmake gcc-c++ mesa-libGL-devel libX11-devel libXrandr-devel libXi-devel libXcursor-devel libXinerama-devel
 ```
 
-Optional: `libglfw3-dev` / `glfw-devel` if you prefer a system GLFW instead of FetchContent.
+## Editor usage
 
-### macOS
+- **Hold RMB** — fly camera look/move
+- **Hierarchy** — select entities; right-click → Add Cube / Delete
+- **Inspector** — transform, material colors, texture slots, lights
+- **Content Browser** — refresh and browse `Assets/Textures` + `Assets/Models`
+- **File → Save/Load Scene** — `Assets/Scenes/default.json`
+- **Edit → Add Cube** — spawn a cube entity
 
-```bash
-xcode-select --install
-brew install cmake
+Drop texture files into `Assets/Textures`, hit **Refresh Assets**, then assign them in the Inspector.
+
+## Architecture
+
+```text
+Editor (ImGui)  →  mutates Scene (ECS)
+SceneRenderer   →  reads Scene + AssetManager → shadows + lit draw
+SceneSerializer →  JSON ↔ Scene
 ```
 
-## Build with CMake (recommended for Linux / macOS)
-
-```bash
-cmake -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build
-```
-
-Run (from the folder that contains the binary, so `Assets/` resolves):
-
-```bash
-# Linux / macOS
-./build/OpenGLApp
-
-# Windows (example)
-.\build\Release\OpenGLApp.exe
-```
-
-Visual Studio via CMake:
-
-```bash
-cmake -B build -G "Visual Studio 17 2022" -A x64
-cmake --build build --config Release
-```
-
-## Build with Visual Studio (Windows)
-
-1. Open `OpenGL/OpenGL.sln` in Visual Studio 2022.
-2. Build **Debug | x64** (or Release).
-3. Run the project.
-
-Uses the vendored `Dependencies/lib/glfw3.lib`. MSVC toolset v143 required.
-
-## What’s tracked
-
-Source, shaders, docs, VS project files, and dependency headers. Build outputs, CMake `build/`, and Visual Studio cache are ignored. Generated CMake solutions are not committed — each platform generates its own.
+Engine never includes ImGui.

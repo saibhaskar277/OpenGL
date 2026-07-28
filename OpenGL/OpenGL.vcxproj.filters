@@ -7,14 +7,41 @@
     <Filter Include="Engine\Core">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Camera">
+      <UniqueIdentifier>{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Assets">
+      <UniqueIdentifier>{B2C3D4E5-F6A7-8901-BCDE-F12345678901}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Engine\Renderer">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Renderer\RHI">
+      <UniqueIdentifier>{C3D4E5F6-A7B8-9012-CDEF-123456789012}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Renderer\Mesh">
+      <UniqueIdentifier>{D4E5F6A7-B8C9-0123-DEF0-234567890123}</UniqueIdentifier>
     </Filter>
     <Filter Include="Engine\Renderer\Lighting">
       <UniqueIdentifier>{AE2FC141-12DA-4DCA-BA37-EC88E99CF405}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Renderer\Shadows">
+      <UniqueIdentifier>{E5F6A7B8-C9D0-1234-EF01-345678901234}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Engine\Scene">
       <UniqueIdentifier>{B09D033B-C7DF-4D6D-BD72-E3D02FF7E2F8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Editor">
+      <UniqueIdentifier>{F6A7B8C9-D0E1-2345-F012-456789012345}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Editor\App">
+      <UniqueIdentifier>{A7B8C9D0-E1F2-3456-0123-567890123456}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Editor\Viewport">
+      <UniqueIdentifier>{B8C9D0E1-F2A3-4567-1234-678901234567}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Editor\Panels">
+      <UniqueIdentifier>{C9D0E1F2-A3B4-5678-2345-789012345678}</UniqueIdentifier>
     </Filter>
     <Filter Include="Sandbox">
       <UniqueIdentifier>{6A15FCD4-5BD9-4D30-B681-2C860CEAE5ED}</UniqueIdentifier>
@@ -30,47 +57,113 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Core\glad.c">
+      <Filter>Engine\Core</Filter>
+    </ClCompile>
     <ClCompile Include="Engine\Core\Window.cpp">
       <Filter>Engine\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Renderer\DirectionalShadowPass.cpp">
-      <Filter>Engine\Renderer</Filter>
+    <ClCompile Include="Engine\Camera\FlyCameraController.cpp">
+      <Filter>Engine\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Renderer\FlyCameraController.cpp">
-      <Filter>Engine\Renderer</Filter>
+    <ClCompile Include="Engine\Camera\PerspectiveCamera.cpp">
+      <Filter>Engine\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Assets\AssetManager.cpp">
+      <Filter>Engine\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Renderer\RHI\IndexBuffer.cpp">
+      <Filter>Engine\Renderer\RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Renderer\RHI\Material.cpp">
+      <Filter>Engine\Renderer\RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Renderer\RHI\Renderer.cpp">
+      <Filter>Engine\Renderer\RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Renderer\RHI\Shader.cpp">
+      <Filter>Engine\Renderer\RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Renderer\RHI\Texture.cpp">
+      <Filter>Engine\Renderer\RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Renderer\RHI\VertexArray.cpp">
+      <Filter>Engine\Renderer\RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Renderer\RHI\VertexBuffer.cpp">
+      <Filter>Engine\Renderer\RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Renderer\Mesh\Mesh.cpp">
+      <Filter>Engine\Renderer\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Renderer\Mesh\Model.cpp">
+      <Filter>Engine\Renderer\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Renderer\Mesh\PrimitiveFactory.cpp">
+      <Filter>Engine\Renderer\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Renderer\Mesh\TangentSpace.cpp">
+      <Filter>Engine\Renderer\Mesh</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Renderer\Lighting\LightingEnvironment.cpp">
       <Filter>Engine\Renderer\Lighting</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Renderer\Mesh.cpp">
-      <Filter>Engine\Renderer</Filter>
+    <ClCompile Include="Engine\Renderer\Shadows\CubemapShadowMap.cpp">
+      <Filter>Engine\Renderer\Shadows</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Renderer\PerspectiveCamera.cpp">
-      <Filter>Engine\Renderer</Filter>
+    <ClCompile Include="Engine\Renderer\Shadows\DirectionalShadowPass.cpp">
+      <Filter>Engine\Renderer\Shadows</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Renderer\PrimitiveFactory.cpp">
-      <Filter>Engine\Renderer</Filter>
+    <ClCompile Include="Engine\Renderer\Shadows\LightShadowSystem.cpp">
+      <Filter>Engine\Renderer\Shadows</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Renderer\Renderer.cpp">
-      <Filter>Engine\Renderer</Filter>
+    <ClCompile Include="Engine\Renderer\Shadows\ShadowMap.cpp">
+      <Filter>Engine\Renderer\Shadows</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Renderer\Shader.cpp">
-      <Filter>Engine\Renderer</Filter>
+    <ClCompile Include="Engine\Scene\Registry.cpp">
+      <Filter>Engine\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Renderer\ShadowMap.cpp">
-      <Filter>Engine\Renderer</Filter>
+    <ClCompile Include="Engine\Scene\Scene.cpp">
+      <Filter>Engine\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Renderer\VertexArray.cpp">
-      <Filter>Engine\Renderer</Filter>
+    <ClCompile Include="Engine\Scene\SceneRenderer.cpp">
+      <Filter>Engine\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Renderer\VertexBuffer.cpp">
-      <Filter>Engine\Renderer</Filter>
+    <ClCompile Include="Engine\Scene\SceneSerializer.cpp">
+      <Filter>Engine\Scene</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Scene\Transform.cpp">
       <Filter>Engine\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="glad.c">
-      <Filter>Dependencies</Filter>
+    <ClCompile Include="Editor\App\EditorApp.cpp">
+      <Filter>Editor\App</Filter>
+    </ClCompile>
+    <ClCompile Include="Editor\App\EditorLayer.cpp">
+      <Filter>Editor\App</Filter>
+    </ClCompile>
+    <ClCompile Include="Editor\App\ImGuiLayer.cpp">
+      <Filter>Editor\App</Filter>
+    </ClCompile>
+    <ClCompile Include="Editor\Viewport\LightDebugOverlay.cpp">
+      <Filter>Editor\Viewport</Filter>
+    </ClCompile>
+    <ClCompile Include="Editor\Viewport\Picking.cpp">
+      <Filter>Editor\Viewport</Filter>
+    </ClCompile>
+    <ClCompile Include="Editor\Viewport\ViewportGizmo.cpp">
+      <Filter>Editor\Viewport</Filter>
+    </ClCompile>
+    <ClCompile Include="Editor\Panels\CameraPanel.cpp">
+      <Filter>Editor\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="Editor\Panels\ContentBrowserPanel.cpp">
+      <Filter>Editor\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="Editor\Panels\HierarchyPanel.cpp">
+      <Filter>Editor\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="Editor\Panels\InspectorPanel.cpp">
+      <Filter>Editor\Panels</Filter>
     </ClCompile>
     <ClCompile Include="Sandbox\src\main.cpp">
       <Filter>Sandbox</Filter>
@@ -80,11 +173,47 @@
     <ClInclude Include="Engine\Core\Window.h">
       <Filter>Engine\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Renderer\DirectionalShadowPass.h">
-      <Filter>Engine\Renderer</Filter>
+    <ClInclude Include="Engine\Camera\FlyCameraController.h">
+      <Filter>Engine\Camera</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Renderer\FlyCameraController.h">
-      <Filter>Engine\Renderer</Filter>
+    <ClInclude Include="Engine\Camera\PerspectiveCamera.h">
+      <Filter>Engine\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Assets\AssetManager.h">
+      <Filter>Engine\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Renderer\RHI\IndexBuffer.h">
+      <Filter>Engine\Renderer\RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Renderer\RHI\Material.h">
+      <Filter>Engine\Renderer\RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Renderer\RHI\Renderer.h">
+      <Filter>Engine\Renderer\RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Renderer\RHI\Shader.h">
+      <Filter>Engine\Renderer\RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Renderer\RHI\Texture.h">
+      <Filter>Engine\Renderer\RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Renderer\RHI\VertexArray.h">
+      <Filter>Engine\Renderer\RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Renderer\RHI\VertexBuffer.h">
+      <Filter>Engine\Renderer\RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Renderer\Mesh\Mesh.h">
+      <Filter>Engine\Renderer\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Renderer\Mesh\Model.h">
+      <Filter>Engine\Renderer\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Renderer\Mesh\PrimitiveFactory.h">
+      <Filter>Engine\Renderer\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Renderer\Mesh\TangentSpace.h">
+      <Filter>Engine\Renderer\Mesh</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Renderer\Lighting\DirectionalLight.h">
       <Filter>Engine\Renderer\Lighting</Filter>
@@ -101,35 +230,68 @@
     <ClInclude Include="Engine\Renderer\Lighting\SpotLight.h">
       <Filter>Engine\Renderer\Lighting</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Renderer\Material.h">
-      <Filter>Engine\Renderer</Filter>
+    <ClInclude Include="Engine\Renderer\Shadows\CubemapShadowMap.h">
+      <Filter>Engine\Renderer\Shadows</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Renderer\Mesh.h">
-      <Filter>Engine\Renderer</Filter>
+    <ClInclude Include="Engine\Renderer\Shadows\DirectionalShadowPass.h">
+      <Filter>Engine\Renderer\Shadows</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Renderer\PerspectiveCamera.h">
-      <Filter>Engine\Renderer</Filter>
+    <ClInclude Include="Engine\Renderer\Shadows\LightShadowSystem.h">
+      <Filter>Engine\Renderer\Shadows</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Renderer\PrimitiveFactory.h">
-      <Filter>Engine\Renderer</Filter>
+    <ClInclude Include="Engine\Renderer\Shadows\ShadowMap.h">
+      <Filter>Engine\Renderer\Shadows</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Renderer\Renderer.h">
-      <Filter>Engine\Renderer</Filter>
+    <ClInclude Include="Engine\Scene\Components.h">
+      <Filter>Engine\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Renderer\Shader.h">
-      <Filter>Engine\Renderer</Filter>
+    <ClInclude Include="Engine\Scene\Entity.h">
+      <Filter>Engine\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Renderer\ShadowMap.h">
-      <Filter>Engine\Renderer</Filter>
+    <ClInclude Include="Engine\Scene\Registry.h">
+      <Filter>Engine\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Renderer\VertexArray.h">
-      <Filter>Engine\Renderer</Filter>
+    <ClInclude Include="Engine\Scene\Scene.h">
+      <Filter>Engine\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Renderer\VertexBuffer.h">
-      <Filter>Engine\Renderer</Filter>
+    <ClInclude Include="Engine\Scene\SceneRenderer.h">
+      <Filter>Engine\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Scene\SceneSerializer.h">
+      <Filter>Engine\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Scene\Transform.h">
       <Filter>Engine\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Editor\App\EditorApp.h">
+      <Filter>Editor\App</Filter>
+    </ClInclude>
+    <ClInclude Include="Editor\App\EditorLayer.h">
+      <Filter>Editor\App</Filter>
+    </ClInclude>
+    <ClInclude Include="Editor\App\ImGuiLayer.h">
+      <Filter>Editor\App</Filter>
+    </ClInclude>
+    <ClInclude Include="Editor\Viewport\LightDebugOverlay.h">
+      <Filter>Editor\Viewport</Filter>
+    </ClInclude>
+    <ClInclude Include="Editor\Viewport\Picking.h">
+      <Filter>Editor\Viewport</Filter>
+    </ClInclude>
+    <ClInclude Include="Editor\Viewport\ViewportGizmo.h">
+      <Filter>Editor\Viewport</Filter>
+    </ClInclude>
+    <ClInclude Include="Editor\Panels\CameraPanel.h">
+      <Filter>Editor\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="Editor\Panels\ContentBrowserPanel.h">
+      <Filter>Editor\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="Editor\Panels\HierarchyPanel.h">
+      <Filter>Editor\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="Editor\Panels\InspectorPanel.h">
+      <Filter>Editor\Panels</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

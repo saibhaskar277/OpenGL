@@ -43,10 +43,8 @@ struct HemisphereLight {
     vec3 skyColor;
     vec3 groundColor;
     float intensity;
-    vec3 bounceColor;
-    float bounceStrength;
-    float floorHeight;
-    float bounceFalloff;
+    vec3 upDirection;
+    int enabled;
 };
 
 in vec3 vWorldPosition;
@@ -196,6 +194,7 @@ float samplePointShadow(int lightIndex, vec3 lightPosition)
     return currentDepth - bias > closestDepth ? 1.0 : 0.0;
 }
 
+// Blinn-Phong. lightDirection must point from the surface toward the light.
 vec3 evaluateSurfaceLight(
     vec3 lightDirection,
     vec3 radiance,
@@ -204,13 +203,17 @@ vec3 evaluateSurfaceLight(
     vec3 albedo,
     vec3 specularColor)
 {
-    float diffuseFactor = max(dot(normal, lightDirection), 0.0);
+    float nDotL = max(dot(normal, lightDirection), 0.0);
+    if (nDotL <= 0.0) {
+        return vec3(0.0);
+    }
+
     vec3 halfwayDirection = normalize(lightDirection + viewDirection);
     float specularFactor = pow(
         max(dot(normal, halfwayDirection), 0.0),
-        uMaterial.shininess);
+        max(uMaterial.shininess, 1.0));
 
-    vec3 diffuse = albedo * diffuseFactor;
+    vec3 diffuse = albedo * nDotL;
     vec3 specular = specularColor * specularFactor;
     return (diffuse + specular) * radiance;
 }
@@ -225,6 +228,7 @@ vec3 evaluateDirectional(
         return vec3(0.0);
     }
 
+    // direction = travel direction of light rays; L points toward the light.
     vec3 lightDirection = normalize(-uDirectional.direction);
     vec3 radiance = uDirectional.color * uDirectional.intensity;
     float shadow = 0.0;
@@ -284,12 +288,21 @@ vec3 evaluateSpot(
     vec3 toLight = uSpot.position - vWorldPosition;
     float distanceToLight = length(toLight);
     vec3 lightDirection = toLight / max(distanceToLight, 0.0001);
-    float coneAngle = dot(lightDirection, normalize(-uSpot.direction));
-    float cone = clamp(
-        (coneAngle - uSpot.outerCutoff) /
-        max(uSpot.innerCutoff - uSpot.outerCutoff, 0.0001),
-        0.0,
-        1.0);
+
+    // Spot direction = where the cone points. Compare against light→fragment.
+    vec3 spotAxis = normalize(uSpot.direction);
+    float cosTheta = dot(normalize(-lightDirection), spotAxis);
+
+    // Cutoffs are cos(angle). Inner is narrower => larger cosine.
+    float cosInner = uSpot.innerCutoff;
+    float cosOuter = uSpot.outerCutoff;
+    if (cosInner < cosOuter) {
+        float tmp = cosInner;
+        cosInner = cosOuter;
+        cosOuter = tmp;
+    }
+
+    float cone = smoothstep(cosOuter, cosInner, cosTheta);
     float attenuation = 1.0 / max(
         uSpot.constantAttenuation +
         uSpot.linearAttenuation * distanceToLight +
@@ -315,27 +328,28 @@ vec3 evaluateSpot(
         specularColor);
 }
 
-vec3 evaluateIndirect(vec3 normal, vec3 albedo, float ao)
+// Classic hemisphere ambient: sky on upward normals, ground on downward.
+vec3 evaluateHemisphere(vec3 normal, vec3 albedo, float ao)
 {
-    float hemisphereBlend = normal.y * 0.5 + 0.5;
-    vec3 hemisphere = mix(
+    if (uHemisphere.enabled == 0) {
+        return vec3(0.0);
+    }
+
+    vec3 up = uHemisphere.upDirection;
+    float upLength = length(up);
+    if (upLength < 0.0001) {
+        up = vec3(0.0, 1.0, 0.0);
+    } else {
+        up /= upLength;
+    }
+
+    float blend = clamp(dot(normal, up) * 0.5 + 0.5, 0.0, 1.0);
+    vec3 ambient = mix(
         uHemisphere.groundColor,
         uHemisphere.skyColor,
-        hemisphereBlend) * uHemisphere.intensity;
+        blend) * uHemisphere.intensity;
 
-    float heightAboveFloor = max(vWorldPosition.y - uHemisphere.floorHeight, 0.0);
-    float floorFacing = max(
-        (dot(normal, vec3(0.0, -1.0, 0.0)) + 0.35) / 1.35,
-        0.0);
-    float bounceAttenuation =
-        1.0 / (1.0 + heightAboveFloor * uHemisphere.bounceFalloff);
-    vec3 floorBounce =
-        uHemisphere.bounceColor *
-        uHemisphere.bounceStrength *
-        floorFacing *
-        bounceAttenuation;
-
-    return albedo * (hemisphere + floorBounce) * ao;
+    return albedo * ambient * ao;
 }
 
 void main()
@@ -347,10 +361,11 @@ void main()
     vec3 normal = sampleNormal();
     vec3 viewDirection = normalize(uViewPosition - vWorldPosition);
 
-    vec3 lighting = evaluateIndirect(normal, albedo, ao);
+    vec3 lighting = evaluateHemisphere(normal, albedo, ao);
     lighting += evaluateDirectional(normal, viewDirection, albedo, specularColor);
 
-    for (int index = 0; index < uPointLightCount; ++index) {
+    int pointCount = min(uPointLightCount, MAX_POINT_LIGHTS);
+    for (int index = 0; index < pointCount; ++index) {
         lighting += evaluatePoint(
             index,
             uPointLights[index],

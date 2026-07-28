@@ -4,7 +4,7 @@
 #include "Engine/Renderer/Lighting/HemisphereLight.h"
 #include "Engine/Renderer/Lighting/PointLight.h"
 #include "Engine/Renderer/Lighting/SpotLight.h"
-#include "Engine/Renderer/Material.h"
+#include "Engine/Renderer/RHI/Material.h"
 
 #include <glm/glm.hpp>
 

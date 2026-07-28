@@ -26,6 +26,7 @@ public:
     void swapBuffers() const;
     void cursorPosition(double& x, double& y) const;
     void setCursorCaptured(bool captured);
+    [[nodiscard]] GLFWwindow* nativeHandle() const;
 
 private:
     static void framebufferSizeCallback(GLFWwindow* window, int width, int height);

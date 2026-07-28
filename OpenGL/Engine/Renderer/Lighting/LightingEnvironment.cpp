@@ -1,9 +1,11 @@
 #include "Engine/Renderer/Lighting/LightingEnvironment.h"
 
-#include "Engine/Renderer/Shader.h"
+#include "Engine/Renderer/RHI/Shader.h"
 
+#include <glm/glm.hpp>
 #include <glm/trigonometric.hpp>
 
+#include <algorithm>
 #include <stdexcept>
 #include <string>
 
@@ -66,7 +68,11 @@ void LightingEnvironment::apply(
     shader.setFloat("uMaterial.ambientOcclusion", material.ambientOcclusion);
 
     shader.setInt("uDirectional.enabled", m_directionalLight.enabled ? 1 : 0);
-    shader.setVec3("uDirectional.direction", m_directionalLight.direction);
+    shader.setVec3(
+        "uDirectional.direction",
+        glm::length(m_directionalLight.direction) > 0.0001f
+            ? glm::normalize(m_directionalLight.direction)
+            : glm::vec3(0.0f, -1.0f, 0.0f));
     shader.setVec3("uDirectional.color", m_directionalLight.color);
     shader.setFloat("uDirectional.intensity", m_directionalLight.intensity);
 
@@ -82,28 +88,33 @@ void LightingEnvironment::apply(
         shader.setFloat(prefix + "quadraticAttenuation", light.quadraticAttenuation);
     }
 
+    const float innerDegrees = std::min(
+        m_spotLight.innerCutoffDegrees,
+        m_spotLight.outerCutoffDegrees);
+    const float outerDegrees = std::max(
+        m_spotLight.innerCutoffDegrees,
+        m_spotLight.outerCutoffDegrees);
+
     shader.setInt("uSpot.enabled", m_spotLight.enabled ? 1 : 0);
     shader.setVec3("uSpot.position", m_spotLight.position);
-    shader.setVec3("uSpot.direction", m_spotLight.direction);
+    shader.setVec3(
+        "uSpot.direction",
+        glm::length(m_spotLight.direction) > 0.0001f
+            ? glm::normalize(m_spotLight.direction)
+            : glm::vec3(0.0f, -1.0f, 0.0f));
     shader.setVec3("uSpot.color", m_spotLight.color);
     shader.setFloat("uSpot.intensity", m_spotLight.intensity);
-    shader.setFloat(
-        "uSpot.innerCutoff",
-        glm::cos(glm::radians(m_spotLight.innerCutoffDegrees)));
-    shader.setFloat(
-        "uSpot.outerCutoff",
-        glm::cos(glm::radians(m_spotLight.outerCutoffDegrees)));
+    shader.setFloat("uSpot.innerCutoff", glm::cos(glm::radians(innerDegrees)));
+    shader.setFloat("uSpot.outerCutoff", glm::cos(glm::radians(outerDegrees)));
     shader.setFloat("uSpot.constantAttenuation", m_spotLight.constantAttenuation);
     shader.setFloat("uSpot.linearAttenuation", m_spotLight.linearAttenuation);
     shader.setFloat("uSpot.quadraticAttenuation", m_spotLight.quadraticAttenuation);
 
+    shader.setInt("uHemisphere.enabled", m_hemisphereLight.enabled ? 1 : 0);
     shader.setVec3("uHemisphere.skyColor", m_hemisphereLight.skyColor);
     shader.setVec3("uHemisphere.groundColor", m_hemisphereLight.groundColor);
     shader.setFloat("uHemisphere.intensity", m_hemisphereLight.intensity);
-    shader.setVec3("uHemisphere.bounceColor", m_hemisphereLight.bounceColor);
-    shader.setFloat("uHemisphere.bounceStrength", m_hemisphereLight.bounceStrength);
-    shader.setFloat("uHemisphere.floorHeight", m_hemisphereLight.floorHeight);
-    shader.setFloat("uHemisphere.bounceFalloff", m_hemisphereLight.bounceFalloff);
+    shader.setVec3("uHemisphere.upDirection", m_hemisphereLight.upDirection);
 }
 
 } // namespace Engine

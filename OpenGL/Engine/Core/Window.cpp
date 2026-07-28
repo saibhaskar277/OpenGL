@@ -94,6 +94,10 @@ void Window::setCursorCaptured(bool captured) {
         captured ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
 }
 
+GLFWwindow* Window::nativeHandle() const {
+    return m_window;
+}
+
 void Window::framebufferSizeCallback(GLFWwindow* window, int width, int height) {
     auto* owner = static_cast<Window*>(glfwGetWindowUserPointer(window));
     if (owner != nullptr) {

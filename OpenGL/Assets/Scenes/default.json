@@ -1,0 +1,130 @@
+{
+  "version": 1,
+  "selectedEntity": 2,
+  "entities": [
+    {
+      "id": 1,
+      "tag": { "name": "Floor" },
+      "transform": {
+        "position": [0.0, -1.0, 0.0],
+        "rotation": [0.0, 0.0, 0.0],
+        "scale": [8.0, 0.1, 8.0]
+      },
+      "meshRenderer": {
+        "meshType": "Cube",
+        "modelPath": "",
+        "castShadows": true,
+        "visible": true
+      },
+      "material": {
+        "albedo": [0.75, 0.75, 0.75],
+        "specularColor": [0.2, 0.2, 0.2],
+        "shininess": 24.0,
+        "emissive": [0.0, 0.0, 0.0],
+        "ambientOcclusion": 1.0,
+        "albedoMapPath": "",
+        "normalMapPath": "",
+        "specularMapPath": "",
+        "emissiveMapPath": "",
+        "aoMapPath": ""
+      }
+    },
+    {
+      "id": 2,
+      "tag": { "name": "Cube" },
+      "transform": {
+        "position": [0.0, 0.0, 0.0],
+        "rotation": [-15.0, 30.0, 0.0],
+        "scale": [1.0, 1.0, 1.0]
+      },
+      "meshRenderer": {
+        "meshType": "Cube",
+        "modelPath": "",
+        "castShadows": true,
+        "visible": true
+      },
+      "material": {
+        "albedo": [1.0, 0.55, 0.2],
+        "specularColor": [0.5, 0.5, 0.5],
+        "shininess": 64.0,
+        "emissive": [0.0, 0.0, 0.0],
+        "ambientOcclusion": 1.0,
+        "albedoMapPath": "",
+        "normalMapPath": "",
+        "specularMapPath": "",
+        "emissiveMapPath": "",
+        "aoMapPath": ""
+      }
+    },
+    {
+      "id": 3,
+      "tag": { "name": "Directional Light" },
+      "transform": {
+        "position": [0.0, 4.0, 0.0],
+        "rotation": [0.0, 0.0, 0.0],
+        "scale": [1.0, 1.0, 1.0]
+      },
+      "directionalLight": {
+        "direction": [-0.4, -1.0, -0.25],
+        "color": [0.72, 0.82, 1.0],
+        "intensity": 0.75,
+        "enabled": true
+      }
+    },
+    {
+      "id": 4,
+      "tag": { "name": "Point Light" },
+      "transform": {
+        "position": [2.0, 1.8, 1.5],
+        "rotation": [0.0, 0.0, 0.0],
+        "scale": [1.0, 1.0, 1.0]
+      },
+      "pointLight": {
+        "position": [2.0, 1.8, 1.5],
+        "color": [1.0, 0.32, 0.08],
+        "intensity": 5.0,
+        "constantAttenuation": 1.0,
+        "linearAttenuation": 0.09,
+        "quadraticAttenuation": 0.032
+      }
+    },
+    {
+      "id": 5,
+      "tag": { "name": "Spot Light" },
+      "transform": {
+        "position": [0.0, 0.0, 0.0],
+        "rotation": [0.0, 0.0, 0.0],
+        "scale": [1.0, 1.0, 1.0]
+      },
+      "spotLight": {
+        "position": [0.0, 0.0, 0.0],
+        "direction": [0.0, 0.0, -1.0],
+        "color": [0.55, 0.72, 1.0],
+        "intensity": 2.0,
+        "innerCutoffDegrees": 12.5,
+        "outerCutoffDegrees": 17.5,
+        "constantAttenuation": 1.0,
+        "linearAttenuation": 0.09,
+        "quadraticAttenuation": 0.032,
+        "enabled": true,
+        "followCamera": true
+      }
+    },
+    {
+      "id": 6,
+      "tag": { "name": "Hemisphere Light" },
+      "transform": {
+        "position": [0.0, 0.0, 0.0],
+        "rotation": [0.0, 0.0, 0.0],
+        "scale": [1.0, 1.0, 1.0]
+      },
+      "hemisphereLight": {
+        "skyColor": [0.4, 0.55, 0.85],
+        "groundColor": [0.18, 0.14, 0.1],
+        "intensity": 0.35,
+        "upDirection": [0.0, 1.0, 0.0],
+        "enabled": true
+      }
+    }
+  ]
+}
