@@ -6,6 +6,8 @@
 #include "Editor/Viewport/Picking.h"
 #include "Engine/Assets/AssetManager.h"
 #include "Engine/Core/Window.h"
+#include "Engine/Physics/IPhysicsWorld.h"
+#include "Engine/Physics/PhysicsSystem.h"
 #include "Engine/Renderer/Shadows/LightShadowSystem.h"
 #include "Engine/Camera/PerspectiveCamera.h"
 #include "Engine/Renderer/RHI/Renderer.h"
@@ -21,6 +23,7 @@
 #include <chrono>
 #include <exception>
 #include <iostream>
+#include <memory>
 
 namespace Editor {
 
@@ -43,6 +46,11 @@ int EditorApp::run() {
                       << error.what() << '\n';
             scene.createDefaultScene();
         }
+
+        std::unique_ptr<Engine::IPhysicsWorld> physicsWorld =
+            Engine::createJoltPhysicsWorld();
+        Engine::PhysicsSystem physics(*physicsWorld);
+        physics.rebuild(scene);
 
         Engine::Shader litShader(
             "Assets/Shaders/Lit.vert",
@@ -125,6 +133,10 @@ int EditorApp::run() {
             }
             mouseWasPressed = leftMouse;
 
+            const bool transformsAuthoritative =
+                editorLayer.gizmo().isUsing() || !physics.simulationEnabled();
+            physics.update(scene, deltaTime, transformsAuthoritative);
+
             sceneRenderer.render(
                 scene,
                 assets,
@@ -140,6 +152,7 @@ int EditorApp::run() {
                 assets,
                 camera,
                 editorCamera,
+                physics,
                 deltaTime,
                 static_cast<float>(window.framebufferWidth()),
                 static_cast<float>(window.framebufferHeight()));

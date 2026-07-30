@@ -61,6 +61,10 @@ bool HierarchyPanel::onImGuiRender(Engine::Scene& scene) {
             scene.setSelectedEntity(scene.createCube("Cube"));
             dirty = true;
         }
+        if (ImGui::MenuItem("Add Physics Cube")) {
+            scene.setSelectedEntity(scene.createPhysicsCube());
+            dirty = true;
+        }
         if (ImGui::BeginMenu("Add Light")) {
             if (ImGui::MenuItem("Directional Light")) {
                 scene.setSelectedEntity(scene.createDirectionalLight());

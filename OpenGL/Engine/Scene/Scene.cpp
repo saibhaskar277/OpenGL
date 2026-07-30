@@ -1,5 +1,7 @@
 #include "Engine/Scene/Scene.h"
 
+#include "Engine/Physics/ColliderFactory.h"
+#include "Engine/Physics/PhysicsComponents.h"
 #include "Engine/Scene/Components.h"
 
 #include <glm/glm.hpp>
@@ -37,6 +39,22 @@ Entity Scene::createCube(const std::string& name) {
     const Entity entity = createEntity(name);
     m_registry.add<MeshRendererComponent>(entity);
     m_registry.add<MaterialComponent>(entity);
+    return entity;
+}
+
+Entity Scene::createPhysicsCube(const std::string& name, PhysicsMotionType motion) {
+    const Entity entity = createCube(name);
+    auto& transform = m_registry.get<TransformComponent>(entity).transform;
+    transform.setPosition(glm::vec3(0.0f, 2.0f, 0.0f));
+
+    RigidBodyComponent body;
+    body.motionType = motion;
+    body.mass = 1.0f;
+    body.needsRebuild = true;
+    m_registry.add<RigidBodyComponent>(entity, body);
+    m_registry.add<ColliderComponent>(
+        entity,
+        ColliderFactory::boxFromScale(transform.scale()));
     return entity;
 }
 
@@ -116,16 +134,27 @@ void Scene::createDefaultScene() {
         material.albedo = glm::vec3(0.75f);
         material.specularColor = glm::vec3(0.2f);
         material.shininess = 24.0f;
+
+        RigidBodyComponent body;
+        body.motionType = PhysicsMotionType::Static;
+        body.needsRebuild = true;
+        m_registry.add<RigidBodyComponent>(floor, body);
+        m_registry.add<ColliderComponent>(
+            floor,
+            ColliderFactory::boxFromScale(transform.scale()));
     }
 
-    Entity cube = createCube("Cube");
+    Entity cube = createPhysicsCube("Physics Cube", PhysicsMotionType::Dynamic);
     {
         auto& transform = m_registry.get<TransformComponent>(cube).transform;
-        transform.setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+        transform.setPosition(glm::vec3(0.0f, 2.0f, 0.0f));
         transform.setRotationDegrees(glm::vec3(-15.0f, 30.0f, 0.0f));
         auto& material = m_registry.get<MaterialComponent>(cube);
         material.albedo = glm::vec3(1.0f, 0.55f, 0.2f);
         material.shininess = 64.0f;
+        m_registry.get<ColliderComponent>(cube) =
+            ColliderFactory::boxFromScale(transform.scale());
+        m_registry.get<RigidBodyComponent>(cube).needsRebuild = true;
     }
 
     {

@@ -10,6 +10,7 @@
 #include "Engine/Assets/AssetManager.h"
 #include "Engine/Camera/PerspectiveCamera.h"
 #include "Engine/Core/Window.h"
+#include "Engine/Physics/PhysicsSystem.h"
 #include "Engine/Scene/Scene.h"
 
 #include <filesystem>
@@ -25,6 +26,7 @@ public:
         Engine::AssetManager& assets,
         Engine::PerspectiveCamera& camera,
         EditorCameraController& editorCamera,
+        Engine::PhysicsSystem& physics,
         float deltaTime,
         float viewportWidth,
         float viewportHeight);
@@ -39,10 +41,11 @@ public:
 
 private:
     void updateWindowTitle(Engine::Window& window) const;
-    void newScene(Engine::Scene& scene);
+    void newScene(Engine::Scene& scene, Engine::PhysicsSystem& physics);
     void openScene(
         Engine::Scene& scene,
         Engine::AssetManager& assets,
+        Engine::PhysicsSystem& physics,
         const std::filesystem::path& path);
     void saveScene(Engine::Scene& scene);
     void saveSceneAs(Engine::Scene& scene, const std::string& fileName);

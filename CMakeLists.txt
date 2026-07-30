@@ -7,90 +7,66 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(APP_SOURCE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/OpenGL")
-
-include(FetchContent)
-
-# ---------------------------------------------------------------------------
-# GLFW
-# ---------------------------------------------------------------------------
-set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
-
-find_package(glfw3 CONFIG QUIET)
-if(NOT glfw3_FOUND AND NOT TARGET glfw)
-    find_package(PkgConfig QUIET)
-    if(PkgConfig_FOUND)
-        pkg_check_modules(PC_GLFW QUIET glfw3)
-    endif()
-endif()
-
-if(TARGET glfw)
-    set(OPENGL_GLFW_TARGET glfw)
-elseif(TARGET glfw3::glfw)
-    set(OPENGL_GLFW_TARGET glfw3::glfw)
-elseif(PC_GLFW_FOUND)
-    add_library(glfw_pkginterface INTERFACE)
-    target_include_directories(glfw_pkginterface INTERFACE ${PC_GLFW_INCLUDE_DIRS})
-    target_link_libraries(glfw_pkginterface INTERFACE ${PC_GLFW_LIBRARIES})
-    set(OPENGL_GLFW_TARGET glfw_pkginterface)
-else()
-    FetchContent_Declare(
-        glfw
-        GIT_REPOSITORY https://github.com/glfw/glfw.git
-        GIT_TAG 3.4
-        GIT_SHALLOW TRUE
-    )
-    FetchContent_MakeAvailable(glfw)
-    set(OPENGL_GLFW_TARGET glfw)
-endif()
+set(DEPS_ROOT "${APP_SOURCE_ROOT}/Dependencies")
 
 find_package(OpenGL REQUIRED)
 
 # ---------------------------------------------------------------------------
-# nlohmann/json
+# All third-party code lives under OpenGL/Dependencies (single source).
 # ---------------------------------------------------------------------------
-FetchContent_Declare(
-    json
-    GIT_REPOSITORY https://github.com/nlohmann/json.git
-    GIT_TAG v3.11.3
-    GIT_SHALLOW TRUE
-)
-FetchContent_MakeAvailable(json)
 
-# ---------------------------------------------------------------------------
-# Dear ImGui (docking)
-# ---------------------------------------------------------------------------
-FetchContent_Declare(
-    imgui
-    GIT_REPOSITORY https://github.com/ocornut/imgui.git
-    GIT_TAG docking
-    GIT_SHALLOW TRUE
-)
-FetchContent_GetProperties(imgui)
-if(NOT imgui_POPULATED)
-    FetchContent_Populate(imgui)
+# GLFW — prebuilt lib on Windows; system package elsewhere
+if(WIN32)
+    add_library(glfw STATIC IMPORTED)
+    set_target_properties(glfw PROPERTIES
+        IMPORTED_LOCATION "${DEPS_ROOT}/lib/glfw3.lib"
+        INTERFACE_INCLUDE_DIRECTORIES "${DEPS_ROOT}/include"
+    )
+    set(OPENGL_GLFW_TARGET glfw)
+else()
+    find_package(glfw3 REQUIRED)
+    if(TARGET glfw)
+        set(OPENGL_GLFW_TARGET glfw)
+    else()
+        set(OPENGL_GLFW_TARGET glfw3::glfw)
+    endif()
 endif()
 
+# Dear ImGui + ImGuizmo (vendored)
 add_library(imgui STATIC
-    "${imgui_SOURCE_DIR}/imgui.cpp"
-    "${imgui_SOURCE_DIR}/imgui_draw.cpp"
-    "${imgui_SOURCE_DIR}/imgui_tables.cpp"
-    "${imgui_SOURCE_DIR}/imgui_widgets.cpp"
-    "${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp"
-    "${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp"
-    "${APP_SOURCE_ROOT}/Dependencies/imgui/ImGuizmo/ImGuizmo.cpp"
+    "${DEPS_ROOT}/imgui/imgui.cpp"
+    "${DEPS_ROOT}/imgui/imgui_draw.cpp"
+    "${DEPS_ROOT}/imgui/imgui_tables.cpp"
+    "${DEPS_ROOT}/imgui/imgui_widgets.cpp"
+    "${DEPS_ROOT}/imgui/backends/imgui_impl_glfw.cpp"
+    "${DEPS_ROOT}/imgui/backends/imgui_impl_opengl3.cpp"
+    "${DEPS_ROOT}/imgui/ImGuizmo/ImGuizmo.cpp"
 )
 target_include_directories(imgui PUBLIC
-    "${imgui_SOURCE_DIR}"
-    "${imgui_SOURCE_DIR}/backends"
-    "${APP_SOURCE_ROOT}/Dependencies/imgui/ImGuizmo"
+    "${DEPS_ROOT}/imgui"
+    "${DEPS_ROOT}/imgui/backends"
+    "${DEPS_ROOT}/imgui/ImGuizmo"
+    "${DEPS_ROOT}/include"
 )
 target_link_libraries(imgui PUBLIC ${OPENGL_GLFW_TARGET} OpenGL::GL)
 
+# nlohmann/json (header-only, vendored)
+add_library(nlohmann_json INTERFACE)
+target_include_directories(nlohmann_json INTERFACE "${DEPS_ROOT}/include")
+
+# Jolt Physics (vendored sources)
+set(TARGET_UNIT_TESTS OFF CACHE BOOL "" FORCE)
+set(TARGET_HELLO_WORLD OFF CACHE BOOL "" FORCE)
+set(TARGET_PERFORMANCE_TEST OFF CACHE BOOL "" FORCE)
+set(TARGET_SAMPLES OFF CACHE BOOL "" FORCE)
+set(TARGET_VIEWER OFF CACHE BOOL "" FORCE)
+set(INTERPROCEDURAL_OPTIMIZATION OFF CACHE BOOL "" FORCE)
+set(ENABLE_INSTALL OFF CACHE BOOL "" FORCE)
+set(USE_STATIC_MSVC_RUNTIME_LIBRARY OFF CACHE BOOL "" FORCE)
+add_subdirectory("${DEPS_ROOT}/JoltPhysics/Build" "${CMAKE_BINARY_DIR}/_deps/jolt-build")
+
 # ---------------------------------------------------------------------------
-# Engine sources
+# App sources
 # ---------------------------------------------------------------------------
 set(ENGINE_SOURCES
     "${APP_SOURCE_ROOT}/Engine/Core/glad.c"
@@ -98,6 +74,10 @@ set(ENGINE_SOURCES
     "${APP_SOURCE_ROOT}/Engine/Assets/AssetManager.cpp"
     "${APP_SOURCE_ROOT}/Engine/Camera/FlyCameraController.cpp"
     "${APP_SOURCE_ROOT}/Engine/Camera/PerspectiveCamera.cpp"
+    "${APP_SOURCE_ROOT}/Engine/Physics/PhysicsMath.cpp"
+    "${APP_SOURCE_ROOT}/Engine/Physics/PhysicsSystem.cpp"
+    "${APP_SOURCE_ROOT}/Engine/Physics/ColliderFactory.cpp"
+    "${APP_SOURCE_ROOT}/Engine/Physics/Jolt/JoltPhysicsWorld.cpp"
     "${APP_SOURCE_ROOT}/Engine/Renderer/Lighting/LightingEnvironment.cpp"
     "${APP_SOURCE_ROOT}/Engine/Renderer/Mesh/Mesh.cpp"
     "${APP_SOURCE_ROOT}/Engine/Renderer/Mesh/Model.cpp"
@@ -127,6 +107,7 @@ set(EDITOR_SOURCES
     "${APP_SOURCE_ROOT}/Editor/App/ImGuiLayer.cpp"
     "${APP_SOURCE_ROOT}/Editor/Viewport/EditorCameraController.cpp"
     "${APP_SOURCE_ROOT}/Editor/Viewport/LightDebugOverlay.cpp"
+    "${APP_SOURCE_ROOT}/Editor/Viewport/ColliderDebugOverlay.cpp"
     "${APP_SOURCE_ROOT}/Editor/Viewport/Picking.cpp"
     "${APP_SOURCE_ROOT}/Editor/Viewport/ViewportGizmo.cpp"
     "${APP_SOURCE_ROOT}/Editor/Panels/CameraPanel.cpp"
@@ -137,19 +118,42 @@ set(EDITOR_SOURCES
     "${APP_SOURCE_ROOT}/Sandbox/src/main.cpp"
 )
 
-add_executable(OpenGLApp ${ENGINE_SOURCES} ${EDITOR_SOURCES})
+file(GLOB_RECURSE ENGINE_HEADERS CONFIGURE_DEPENDS
+    "${APP_SOURCE_ROOT}/Engine/*.h"
+    "${APP_SOURCE_ROOT}/Engine/*.hpp"
+)
+file(GLOB_RECURSE EDITOR_HEADERS CONFIGURE_DEPENDS
+    "${APP_SOURCE_ROOT}/Editor/*.h"
+    "${APP_SOURCE_ROOT}/Editor/*.hpp"
+)
+
+set(APP_ALL_SOURCES ${ENGINE_SOURCES} ${EDITOR_SOURCES} ${ENGINE_HEADERS} ${EDITOR_HEADERS})
+
+add_executable(OpenGLApp ${APP_ALL_SOURCES})
+
+source_group(TREE "${APP_SOURCE_ROOT}" FILES ${APP_ALL_SOURCES})
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+set_target_properties(OpenGLApp PROPERTIES FOLDER "App")
+set_target_properties(imgui PROPERTIES FOLDER "Dependencies")
+set_target_properties(Jolt PROPERTIES FOLDER "Dependencies")
 
 target_include_directories(OpenGLApp PRIVATE
     "${APP_SOURCE_ROOT}"
-    "${APP_SOURCE_ROOT}/Dependencies/include"
+    "${DEPS_ROOT}/include"
+    "${DEPS_ROOT}/JoltPhysics"
 )
 
 target_link_libraries(OpenGLApp PRIVATE
     ${OPENGL_GLFW_TARGET}
     OpenGL::GL
     imgui
-    nlohmann_json::nlohmann_json
+    nlohmann_json
+    Jolt
 )
+
+if(WIN32)
+    target_link_libraries(OpenGLApp PRIVATE user32 gdi32 shell32)
+endif()
 
 if(APPLE)
     target_compile_definitions(OpenGLApp PRIVATE GL_SILENCE_DEPRECATION)
@@ -165,6 +169,9 @@ add_custom_command(TARGET OpenGLApp POST_BUILD
 set_target_properties(OpenGLApp PROPERTIES
     VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:OpenGLApp>"
 )
+
+# Make F5 run the app, not CMake's ALL_BUILD helper target.
+set_property(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" PROPERTY VS_STARTUP_PROJECT OpenGLApp)
 
 install(TARGETS OpenGLApp RUNTIME DESTINATION bin)
 install(DIRECTORY "${APP_SOURCE_ROOT}/Assets/" DESTINATION bin/Assets)

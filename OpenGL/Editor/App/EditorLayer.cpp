@@ -1,6 +1,7 @@
 #include "Editor/App/EditorLayer.h"
 
 #include "Editor/Viewport/LightDebugOverlay.h"
+#include "Editor/Viewport/ColliderDebugOverlay.h"
 #include "Engine/Scene/SceneSerializer.h"
 
 #include <imgui.h>
@@ -34,8 +35,9 @@ void EditorLayer::updateWindowTitle(Engine::Window& window) const {
     window.setTitle(title);
 }
 
-void EditorLayer::newScene(Engine::Scene& scene) {
+void EditorLayer::newScene(Engine::Scene& scene, Engine::PhysicsSystem& physics) {
     scene.clear();
+    physics.rebuild(scene);
     m_scenePath.clear();
     m_dirty = true;
 }
@@ -43,9 +45,11 @@ void EditorLayer::newScene(Engine::Scene& scene) {
 void EditorLayer::openScene(
     Engine::Scene& scene,
     Engine::AssetManager& assets,
+    Engine::PhysicsSystem& physics,
     const std::filesystem::path& path) {
     try {
         Engine::SceneSerializer(scene).load(path);
+        physics.rebuild(scene);
         m_scenePath = path;
         m_dirty = false;
         assets.refresh();
@@ -92,6 +96,7 @@ void EditorLayer::onImGuiRender(
     Engine::AssetManager& assets,
     Engine::PerspectiveCamera& camera,
     EditorCameraController& editorCamera,
+    Engine::PhysicsSystem& physics,
     float deltaTime,
     float viewportWidth,
     float viewportHeight) {
@@ -100,7 +105,7 @@ void EditorLayer::onImGuiRender(
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("File")) {
             if (ImGui::MenuItem("New Scene", "Ctrl+N")) {
-                newScene(scene);
+                newScene(scene, physics);
             }
             if (ImGui::MenuItem("Save", "Ctrl+S")) {
                 saveScene(scene);
@@ -127,6 +132,10 @@ void EditorLayer::onImGuiRender(
                 scene.setSelectedEntity(scene.createCube("Cube"));
                 m_dirty = true;
             }
+            if (ImGui::MenuItem("Add Physics Cube")) {
+                scene.setSelectedEntity(scene.createPhysicsCube());
+                m_dirty = true;
+            }
             if (ImGui::BeginMenu("Add Light")) {
                 if (ImGui::MenuItem("Directional Light")) {
                     scene.setSelectedEntity(scene.createDirectionalLight());
@@ -151,6 +160,16 @@ void EditorLayer::onImGuiRender(
             }
             ImGui::EndMenu();
         }
+        if (ImGui::BeginMenu("Physics")) {
+            bool simulating = physics.simulationEnabled();
+            if (ImGui::MenuItem("Simulate", nullptr, simulating)) {
+                physics.setSimulationEnabled(!simulating);
+            }
+            if (ImGui::MenuItem("Rebuild Bodies")) {
+                physics.rebuild(scene);
+            }
+            ImGui::EndMenu();
+        }
         if (ImGui::BeginMenu("Gizmo")) {
             if (ImGui::MenuItem("Translate", "W", m_gizmo.mode() == GizmoMode::Translate)) {
                 m_gizmo.setMode(GizmoMode::Translate);
@@ -171,7 +190,7 @@ void EditorLayer::onImGuiRender(
         saveScene(scene);
     }
     if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_N)) {
-        newScene(scene);
+        newScene(scene, physics);
     }
 
     // Avoid stealing W/E/R while flying the camera with RMB.
@@ -191,6 +210,7 @@ void EditorLayer::onImGuiRender(
     m_performancePanel.onImGuiRender(scene, deltaTime);
 
     drawLightDebugMarkers(scene, camera, viewportWidth, viewportHeight);
+    drawColliderDebugGizmos(scene, camera, viewportWidth, viewportHeight);
 
     m_gizmo.beginFrame();
     if (m_gizmo.draw(scene, camera, viewportWidth, viewportHeight) && m_gizmo.isUsing()) {
@@ -207,7 +227,7 @@ void EditorLayer::onImGuiRender(
     m_cameraPanel.onImGuiRender(camera, editorCamera.fly());
 
     if (!m_openSceneRequest.empty()) {
-        openScene(scene, assets, assetsRelativeScenePath(m_openSceneRequest));
+        openScene(scene, assets, physics, assetsRelativeScenePath(m_openSceneRequest));
         m_openSceneRequest.clear();
     }
 

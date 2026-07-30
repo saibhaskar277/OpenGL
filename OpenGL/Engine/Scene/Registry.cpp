@@ -24,6 +24,8 @@ void Registry::destroyEntity(Entity entity) {
     m_pointLights.erase(entity);
     m_spotLights.erase(entity);
     m_hemisphereLights.erase(entity);
+    m_rigidBodies.erase(entity);
+    m_colliders.erase(entity);
 
     m_alive.erase(entity);
     m_entities.erase(
@@ -40,6 +42,8 @@ void Registry::clear() {
     m_pointLights.clear();
     m_spotLights.clear();
     m_hemisphereLights.clear();
+    m_rigidBodies.clear();
+    m_colliders.clear();
     m_entities.clear();
     m_alive.clear();
     m_nextEntity = 1;

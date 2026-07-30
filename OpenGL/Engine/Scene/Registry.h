@@ -80,6 +80,8 @@ private:
     std::unordered_map<Entity, PointLightComponent> m_pointLights;
     std::unordered_map<Entity, SpotLightComponent> m_spotLights;
     std::unordered_map<Entity, HemisphereLightComponent> m_hemisphereLights;
+    std::unordered_map<Entity, RigidBodyComponent> m_rigidBodies;
+    std::unordered_map<Entity, ColliderComponent> m_colliders;
 };
 
 template <>
@@ -113,6 +115,14 @@ inline std::unordered_map<Entity, SpotLightComponent>& Registry::store<SpotLight
 template <>
 inline std::unordered_map<Entity, HemisphereLightComponent>& Registry::store<HemisphereLightComponent>() {
     return m_hemisphereLights;
+}
+template <>
+inline std::unordered_map<Entity, RigidBodyComponent>& Registry::store<RigidBodyComponent>() {
+    return m_rigidBodies;
+}
+template <>
+inline std::unordered_map<Entity, ColliderComponent>& Registry::store<ColliderComponent>() {
+    return m_colliders;
 }
 
 } // namespace Engine

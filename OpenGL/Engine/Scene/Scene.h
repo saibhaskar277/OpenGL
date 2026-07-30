@@ -3,6 +3,7 @@
 #include "Engine/Renderer/Lighting/LightingEnvironment.h"
 #include "Engine/Scene/Entity.h"
 #include "Engine/Scene/Registry.h"
+#include "Engine/Physics/PhysicsTypes.h"
 
 #include <string>
 
@@ -18,6 +19,9 @@ public:
     void clear();
 
     Entity createCube(const std::string& name = "Cube");
+    Entity createPhysicsCube(
+        const std::string& name = "Physics Cube",
+        PhysicsMotionType motion = PhysicsMotionType::Dynamic);
     Entity createModel(const std::string& modelPath, const std::string& name = "Model");
     Entity createDirectionalLight(const std::string& name = "Directional Light");
     Entity createPointLight(const std::string& name = "Point Light");

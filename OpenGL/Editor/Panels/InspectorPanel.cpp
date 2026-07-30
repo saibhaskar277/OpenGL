@@ -1,6 +1,8 @@
 #include "Editor/Panels/InspectorPanel.h"
 
 #include "Editor/AssetPayloads.h"
+#include "Engine/Physics/ColliderFactory.h"
+#include "Engine/Physics/PhysicsComponents.h"
 #include "Engine/Scene/Components.h"
 
 #include <imgui.h>
@@ -96,6 +98,16 @@ bool InspectorPanel::onImGuiRender(Engine::Scene& scene, Engine::AssetManager& a
             }
             if (ImGui::DragFloat3("Scale", &scale.x, 0.05f)) {
                 transform.setScale(scale);
+                if (registry.has<Engine::ColliderComponent>(selected) &&
+                    registry.get<Engine::ColliderComponent>(selected).shape ==
+                        Engine::ColliderShapeType::Box) {
+                    auto& collider = registry.get<Engine::ColliderComponent>(selected);
+                    collider = Engine::ColliderFactory::boxFromScale(scale);
+                    collider.needsRebuild = true;
+                    if (registry.has<Engine::RigidBodyComponent>(selected)) {
+                        registry.get<Engine::RigidBodyComponent>(selected).needsRebuild = true;
+                    }
+                }
                 dirty = true;
             }
         }
@@ -231,6 +243,130 @@ bool InspectorPanel::onImGuiRender(Engine::Scene& scene, Engine::AssetManager& a
             dirty |= ImGui::DragFloat3("Up Direction", &light.upDirection.x, 0.01f);
             dirty |= ImGui::Checkbox("Enabled", &light.enabled);
         }
+    }
+
+    if (registry.has<Engine::RigidBodyComponent>(selected)) {
+        if (ImGui::CollapsingHeader("Rigid Body", ImGuiTreeNodeFlags_DefaultOpen)) {
+            auto& body = registry.get<Engine::RigidBodyComponent>(selected);
+            ImGui::TextDisabled(
+                "Static = floor/walls. Dynamic = falls with Simulate.");
+            int motion = static_cast<int>(body.motionType);
+            const char* motions[] = {"Static", "Kinematic", "Dynamic"};
+            if (ImGui::Combo("Motion", &motion, motions, 3)) {
+                body.motionType = static_cast<Engine::PhysicsMotionType>(motion);
+                body.needsRebuild = true;
+                dirty = true;
+            }
+            if (ImGui::DragFloat("Mass", &body.mass, 0.05f, 0.01f, 1000.0f)) {
+                body.needsRebuild = true;
+                dirty = true;
+            }
+            if (ImGui::DragFloat("Friction", &body.friction, 0.01f, 0.0f, 2.0f)) {
+                body.needsRebuild = true;
+                dirty = true;
+            }
+            if (ImGui::DragFloat("Restitution", &body.restitution, 0.01f, 0.0f, 1.0f)) {
+                body.needsRebuild = true;
+                dirty = true;
+            }
+            if (ImGui::Checkbox("Gravity", &body.enableGravity)) {
+                body.needsRebuild = true;
+                dirty = true;
+            }
+            if (ImGui::Checkbox("Enabled", &body.enabled)) {
+                body.needsRebuild = true;
+                dirty = true;
+            }
+        }
+    } else if (ImGui::Button("Add Rigid Body")) {
+        Engine::RigidBodyComponent body;
+        body.needsRebuild = true;
+        registry.add<Engine::RigidBodyComponent>(selected, body);
+        if (!registry.has<Engine::ColliderComponent>(selected) &&
+            registry.has<Engine::TransformComponent>(selected)) {
+            registry.add<Engine::ColliderComponent>(
+                selected,
+                Engine::ColliderFactory::boxFromScale(
+                    registry.get<Engine::TransformComponent>(selected).transform.scale()));
+        }
+        dirty = true;
+    }
+
+    if (registry.has<Engine::ColliderComponent>(selected)) {
+        if (ImGui::CollapsingHeader("Collider", ImGuiTreeNodeFlags_DefaultOpen)) {
+            auto& collider = registry.get<Engine::ColliderComponent>(selected);
+            int shape = static_cast<int>(collider.shape);
+            const char* shapes[] = {"Box", "Sphere", "Capsule"};
+            if (ImGui::Combo("Shape", &shape, shapes, 3)) {
+                collider.shape = static_cast<Engine::ColliderShapeType>(shape);
+                collider.needsRebuild = true;
+                if (registry.has<Engine::RigidBodyComponent>(selected)) {
+                    registry.get<Engine::RigidBodyComponent>(selected).needsRebuild = true;
+                }
+                dirty = true;
+            }
+
+            bool colliderChanged = false;
+            if (collider.shape == Engine::ColliderShapeType::Box) {
+                colliderChanged |= ImGui::DragFloat3(
+                    "Half Extents",
+                    &collider.boxHalfExtents.x,
+                    0.01f,
+                    0.05f,
+                    50.0f);
+            } else if (collider.shape == Engine::ColliderShapeType::Sphere) {
+                colliderChanged |= ImGui::DragFloat(
+                    "Radius",
+                    &collider.sphereRadius,
+                    0.01f,
+                    0.05f,
+                    50.0f);
+            } else {
+                colliderChanged |= ImGui::DragFloat(
+                    "Radius",
+                    &collider.capsuleRadius,
+                    0.01f,
+                    0.05f,
+                    50.0f);
+                colliderChanged |= ImGui::DragFloat(
+                    "Half Height",
+                    &collider.capsuleHalfHeight,
+                    0.01f,
+                    0.05f,
+                    50.0f);
+            }
+            colliderChanged |= ImGui::DragFloat3(
+                "Local Offset",
+                &collider.localOffset.x,
+                0.01f);
+
+            if (colliderChanged) {
+                collider.needsRebuild = true;
+                if (registry.has<Engine::RigidBodyComponent>(selected)) {
+                    registry.get<Engine::RigidBodyComponent>(selected).needsRebuild = true;
+                }
+                dirty = true;
+            }
+
+            if (!registry.has<Engine::RigidBodyComponent>(selected)) {
+                ImGui::TextDisabled("No Rigid Body → treated as Static collider.");
+            }
+        }
+    } else if (ImGui::Button("Add Collider")) {
+        if (registry.has<Engine::TransformComponent>(selected)) {
+            auto collider = Engine::ColliderFactory::boxFromScale(
+                registry.get<Engine::TransformComponent>(selected).transform.scale());
+            collider.needsRebuild = true;
+            registry.add<Engine::ColliderComponent>(selected, collider);
+        } else {
+            Engine::ColliderComponent collider;
+            collider.needsRebuild = true;
+            registry.add<Engine::ColliderComponent>(selected, collider);
+        }
+        if (registry.has<Engine::RigidBodyComponent>(selected)) {
+            registry.get<Engine::RigidBodyComponent>(selected).needsRebuild = true;
+        }
+        dirty = true;
     }
 
     ImGui::End();

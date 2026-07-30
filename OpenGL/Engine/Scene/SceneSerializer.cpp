@@ -114,6 +114,26 @@ void SceneSerializer::save(const std::filesystem::path& path) const {
                 {"upDirection", vec3ToJson(light.upDirection)},
                 {"enabled", light.enabled}};
         }
+        if (registry.has<RigidBodyComponent>(entity)) {
+            const auto& body = registry.get<RigidBodyComponent>(entity);
+            entityJson["rigidBody"] = {
+                {"motionType", static_cast<int>(body.motionType)},
+                {"mass", body.mass},
+                {"friction", body.friction},
+                {"restitution", body.restitution},
+                {"enableGravity", body.enableGravity},
+                {"enabled", body.enabled}};
+        }
+        if (registry.has<ColliderComponent>(entity)) {
+            const auto& collider = registry.get<ColliderComponent>(entity);
+            entityJson["collider"] = {
+                {"shape", static_cast<int>(collider.shape)},
+                {"boxHalfExtents", vec3ToJson(collider.boxHalfExtents)},
+                {"sphereRadius", collider.sphereRadius},
+                {"capsuleRadius", collider.capsuleRadius},
+                {"capsuleHalfHeight", collider.capsuleHalfHeight},
+                {"localOffset", vec3ToJson(collider.localOffset)}};
+        }
 
         entities.push_back(std::move(entityJson));
     }
@@ -241,6 +261,37 @@ void SceneSerializer::load(const std::filesystem::path& path) {
             }
             component.light.enabled = lightJson.value("enabled", true);
             registry.add<HemisphereLightComponent>(entity, component);
+        }
+
+        if (entityJson.contains("rigidBody")) {
+            const json& bodyJson = entityJson.at("rigidBody");
+            RigidBodyComponent body;
+            body.motionType = static_cast<PhysicsMotionType>(
+                bodyJson.value("motionType", static_cast<int>(PhysicsMotionType::Dynamic)));
+            body.mass = bodyJson.value("mass", 1.0f);
+            body.friction = bodyJson.value("friction", 0.5f);
+            body.restitution = bodyJson.value("restitution", 0.0f);
+            body.enableGravity = bodyJson.value("enableGravity", true);
+            body.enabled = bodyJson.value("enabled", true);
+            body.needsRebuild = true;
+            registry.add<RigidBodyComponent>(entity, body);
+        }
+
+        if (entityJson.contains("collider")) {
+            const json& colliderJson = entityJson.at("collider");
+            ColliderComponent collider;
+            collider.shape = static_cast<ColliderShapeType>(
+                colliderJson.value("shape", static_cast<int>(ColliderShapeType::Box)));
+            if (colliderJson.contains("boxHalfExtents")) {
+                collider.boxHalfExtents = vec3FromJson(colliderJson.at("boxHalfExtents"));
+            }
+            collider.sphereRadius = colliderJson.value("sphereRadius", 0.5f);
+            collider.capsuleRadius = colliderJson.value("capsuleRadius", 0.25f);
+            collider.capsuleHalfHeight = colliderJson.value("capsuleHalfHeight", 0.5f);
+            if (colliderJson.contains("localOffset")) {
+                collider.localOffset = vec3FromJson(colliderJson.at("localOffset"));
+            }
+            registry.add<ColliderComponent>(entity, collider);
         }
     }
 

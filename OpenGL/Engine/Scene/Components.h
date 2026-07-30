@@ -5,6 +5,7 @@
 #include "Engine/Renderer/Lighting/PointLight.h"
 #include "Engine/Renderer/Lighting/SpotLight.h"
 #include "Engine/Scene/Transform.h"
+#include "Engine/Physics/PhysicsComponents.h"
 
 #include <glm/glm.hpp>
 
