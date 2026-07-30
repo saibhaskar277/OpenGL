@@ -7,6 +7,7 @@
 
 #include <cctype>
 #include <fstream>
+#include <iostream>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -46,10 +47,23 @@ std::filesystem::path resolveRelative(
 std::shared_ptr<Texture> tryLoadMap(
     const std::filesystem::path& path,
     TextureColorSpace colorSpace) {
-    if (path.empty() || !std::filesystem::exists(path)) {
+    if (path.empty()) {
         return nullptr;
     }
-    return std::make_shared<Texture>(Texture::fromFile(path, colorSpace));
+    std::error_code error;
+    const std::filesystem::path absolutePath = std::filesystem::weakly_canonical(path, error);
+    const std::filesystem::path loadPath = error ? path : absolutePath;
+    if (!std::filesystem::exists(loadPath)) {
+        std::cerr << "MTL map not found: " << loadPath.string() << '\n';
+        return nullptr;
+    }
+    try {
+        return std::make_shared<Texture>(Texture::fromFile(loadPath, colorSpace));
+    } catch (const std::exception& exception) {
+        std::cerr << "Failed to load MTL map '" << loadPath.string()
+                  << "': " << exception.what() << '\n';
+        return nullptr;
+    }
 }
 
 std::unordered_map<std::string, ObjMaterialTemplate> loadMtl(

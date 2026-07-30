@@ -6,7 +6,8 @@ namespace Editor {
 
 class HierarchyPanel final {
 public:
-    void onImGuiRender(Engine::Scene& scene);
+    // Returns true if the scene was mutated (add/delete/drop).
+    bool onImGuiRender(Engine::Scene& scene);
 };
 
 } // namespace Editor

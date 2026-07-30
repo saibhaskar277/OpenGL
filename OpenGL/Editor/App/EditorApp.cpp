@@ -2,10 +2,10 @@
 
 #include "Editor/App/EditorLayer.h"
 #include "Editor/App/ImGuiLayer.h"
+#include "Editor/Viewport/EditorCameraController.h"
 #include "Editor/Viewport/Picking.h"
 #include "Engine/Assets/AssetManager.h"
 #include "Engine/Core/Window.h"
-#include "Engine/Camera/FlyCameraController.h"
 #include "Engine/Renderer/Shadows/LightShadowSystem.h"
 #include "Engine/Camera/PerspectiveCamera.h"
 #include "Engine/Renderer/RHI/Renderer.h"
@@ -53,9 +53,13 @@ int EditorApp::run() {
         Engine::PerspectiveCamera camera(45.0f, window.aspectRatio(), 0.1f, 100.0f);
         camera.setPosition(glm::vec3(0.0f, 1.2f, 4.5f));
         camera.setOrientation(-90.0f, -10.0f);
-        Engine::FlyCameraController cameraController;
+
+        EditorCameraController editorCamera;
+        editorCamera.resetPivot(glm::vec3(0.0f, 0.0f, 0.0f));
 
         EditorLayer editorLayer;
+        editorLayer.setScenePath("Assets/Scenes/default.json");
+        editorLayer.markClean();
 
         Engine::Renderer::setClearColor(0.025f, 0.035f, 0.065f, 1.0f);
         Engine::Renderer::setDepthTesting(true);
@@ -81,22 +85,26 @@ int EditorApp::run() {
             camera.setAspectRatio(window.aspectRatio());
             const bool captureMouse = imgui.wantCaptureMouse();
             const bool captureKeyboard = imgui.wantCaptureKeyboard();
+            const bool altDown =
+                glfwGetKey(window.nativeHandle(), GLFW_KEY_LEFT_ALT) == GLFW_PRESS ||
+                glfwGetKey(window.nativeHandle(), GLFW_KEY_RIGHT_ALT) == GLFW_PRESS;
             const bool rightMouse =
                 glfwGetMouseButton(window.nativeHandle(), GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS;
             const bool leftMouse =
                 glfwGetMouseButton(window.nativeHandle(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
 
-            if (!captureMouse && !captureKeyboard && rightMouse) {
-                window.setCursorCaptured(true);
-                cameraController.update(window, camera, deltaTime);
-            } else {
-                window.setCursorCaptured(false);
-                cameraController.resetMouseTracking();
-            }
+            editorCamera.update(
+                window,
+                camera,
+                scene,
+                deltaTime,
+                captureMouse,
+                captureKeyboard);
 
-            // Click-to-select when not flying and not dragging a gizmo.
+            // Click-to-select when not flying / alt-navigating / dragging gizmo.
             if (!captureMouse &&
                 !rightMouse &&
+                !altDown &&
                 leftMouse &&
                 !mouseWasPressed &&
                 !editorLayer.gizmo().isUsing() &&
@@ -127,10 +135,12 @@ int EditorApp::run() {
                 window.framebufferHeight());
 
             editorLayer.onImGuiRender(
+                window,
                 scene,
                 assets,
                 camera,
-                cameraController,
+                editorCamera,
+                deltaTime,
                 static_cast<float>(window.framebufferWidth()),
                 static_cast<float>(window.framebufferHeight()));
             imgui.endFrame();

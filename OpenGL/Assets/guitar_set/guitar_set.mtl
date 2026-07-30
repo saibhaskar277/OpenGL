@@ -1,0 +1,65 @@
+# MTL file - created by a modified js OBJExporter
+
+newmtl M_Gitar_Sari
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pm 1
+Pr 1
+Pds 1
+Pl 1
+Ka 1 1 1
+Kd 1 1 1
+Ke 0 0 0
+map_Kd M_Gitar_Sari.png
+map_Pm metalnessMap1.png
+map_Pr metalnessMap1.png
+norm normalMap1.png
+
+newmtl M_Gitar_Kahverengi
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pm 1
+Pr 1
+Pds 1
+Pl 1
+Ka 1 1 1
+Kd 1 1 1
+Ke 0 0 0
+map_Kd M_Gitar_Kahverengi.png
+map_Pm metalnessMap1.png
+map_Pr metalnessMap1.png
+norm normalMap1.png
+
+newmtl M_Gitar
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pm 1
+Pr 1
+Pds 1
+Pl 1
+Ka 1 1 1
+Kd 1 1 1
+Ke 0 0 0
+map_Kd M_Gitar.png
+map_Pm metalnessMap1.png
+map_Pr metalnessMap1.png
+norm normalMap1.png
+
+newmtl M_Gitar_Bordo
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pm 1
+Pr 1
+Pds 1
+Pl 1
+Ka 1 1 1
+Kd 1 1 1
+Ke 0 0 0
+map_Kd M_Gitar_Bordo.png
+map_Pm metalnessMap1.png
+map_Pr metalnessMap1.png
+norm normalMap1.png

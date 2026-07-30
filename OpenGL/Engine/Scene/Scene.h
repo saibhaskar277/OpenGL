@@ -18,6 +18,7 @@ public:
     void clear();
 
     Entity createCube(const std::string& name = "Cube");
+    Entity createModel(const std::string& modelPath, const std::string& name = "Model");
     Entity createDirectionalLight(const std::string& name = "Directional Light");
     Entity createPointLight(const std::string& name = "Point Light");
     Entity createSpotLight(const std::string& name = "Spot Light");

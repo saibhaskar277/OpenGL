@@ -46,6 +46,10 @@ void CameraPanel::onImGuiRender(
     ImGui::Separator();
     ImGui::TextUnformatted("Controls");
     ImGui::BulletText("RMB + WASD / Space / Shift: fly");
+    ImGui::BulletText("Alt + LMB: orbit");
+    ImGui::BulletText("Alt + MMB (or Alt+Shift+LMB): pan");
+    ImGui::BulletText("Alt + RMB / Mouse wheel: zoom");
+    ImGui::BulletText("F: focus selected");
     ImGui::BulletText("LMB: select object/light");
     ImGui::BulletText("W/E/R: translate / rotate / scale gizmo");
 

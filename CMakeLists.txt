@@ -125,6 +125,7 @@ set(EDITOR_SOURCES
     "${APP_SOURCE_ROOT}/Editor/App/EditorApp.cpp"
     "${APP_SOURCE_ROOT}/Editor/App/EditorLayer.cpp"
     "${APP_SOURCE_ROOT}/Editor/App/ImGuiLayer.cpp"
+    "${APP_SOURCE_ROOT}/Editor/Viewport/EditorCameraController.cpp"
     "${APP_SOURCE_ROOT}/Editor/Viewport/LightDebugOverlay.cpp"
     "${APP_SOURCE_ROOT}/Editor/Viewport/Picking.cpp"
     "${APP_SOURCE_ROOT}/Editor/Viewport/ViewportGizmo.cpp"
@@ -132,6 +133,7 @@ set(EDITOR_SOURCES
     "${APP_SOURCE_ROOT}/Editor/Panels/HierarchyPanel.cpp"
     "${APP_SOURCE_ROOT}/Editor/Panels/InspectorPanel.cpp"
     "${APP_SOURCE_ROOT}/Editor/Panels/ContentBrowserPanel.cpp"
+    "${APP_SOURCE_ROOT}/Editor/Panels/PerformancePanel.cpp"
     "${APP_SOURCE_ROOT}/Sandbox/src/main.cpp"
 )
 

@@ -5,6 +5,7 @@
 #include "Engine/Scene/Components.h"
 
 #include <filesystem>
+#include <iostream>
 #include <stdexcept>
 
 namespace Engine {
@@ -32,7 +33,9 @@ Model* SceneRenderer::modelForPath(AssetManager& assets, const std::string& rela
         Model* raw = model.get();
         m_modelCache.emplace(relativePath, std::move(model));
         return raw;
-    } catch (const std::exception&) {
+    } catch (const std::exception& error) {
+        std::cerr << "Failed to load model '" << relativePath << "': "
+                  << error.what() << '\n';
         return nullptr;
     }
 }
@@ -123,23 +126,49 @@ void SceneRenderer::render(
         const glm::mat4 modelMatrix =
             registry.get<TransformComponent>(entity).transform.matrix();
         litShader.setMat4("uModel", modelMatrix);
-        m_lighting.apply(litShader, camera.position(), material);
-        material.bindMaps(litShader, 1);
 
         if (meshRenderer.meshType == MeshType::Model) {
             if (Model* model = modelForPath(assets, meshRenderer.modelPath)) {
+                const MaterialComponent* materialComponent =
+                    registry.has<MaterialComponent>(entity)
+                    ? &registry.get<MaterialComponent>(entity)
+                    : nullptr;
+
                 for (const ModelPart& part : model->parts()) {
-                    // Prefer entity material maps; fall back to model part material colors.
-                    Material drawMaterial = material;
-                    if (!drawMaterial.albedoMap && part.material.albedoMap) {
-                        drawMaterial = part.material;
+                    // MTL / per-part materials are the source of truth for imported models.
+                    // Entity MaterialComponent only overrides maps when the user assigns paths.
+                    Material drawMaterial = part.material;
+                    if (materialComponent != nullptr) {
+                        if (!materialComponent->albedoMapPath.empty() && material.albedoMap) {
+                            drawMaterial.albedoMap = material.albedoMap;
+                            drawMaterial.albedo = material.albedo;
+                        }
+                        if (!materialComponent->normalMapPath.empty() && material.normalMap) {
+                            drawMaterial.normalMap = material.normalMap;
+                        }
+                        if (!materialComponent->specularMapPath.empty() && material.specularMap) {
+                            drawMaterial.specularMap = material.specularMap;
+                            drawMaterial.specularColor = material.specularColor;
+                            drawMaterial.shininess = material.shininess;
+                        }
+                        if (!materialComponent->emissiveMapPath.empty() && material.emissiveMap) {
+                            drawMaterial.emissiveMap = material.emissiveMap;
+                            drawMaterial.emissive = material.emissive;
+                        }
+                        if (!materialComponent->aoMapPath.empty() && material.aoMap) {
+                            drawMaterial.aoMap = material.aoMap;
+                            drawMaterial.ambientOcclusion = material.ambientOcclusion;
+                        }
                     }
+
                     m_lighting.apply(litShader, camera.position(), drawMaterial);
                     drawMaterial.bindMaps(litShader, 1);
                     Renderer::draw(part.mesh, litShader);
                 }
             }
         } else {
+            m_lighting.apply(litShader, camera.position(), material);
+            material.bindMaps(litShader, 1);
             Renderer::draw(cubeMesh(), litShader);
         }
     }

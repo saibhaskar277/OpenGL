@@ -26,6 +26,7 @@ public:
     void swapBuffers() const;
     void cursorPosition(double& x, double& y) const;
     void setCursorCaptured(bool captured);
+    void setTitle(const std::string& title);
     [[nodiscard]] GLFWwindow* nativeHandle() const;
 
 private:

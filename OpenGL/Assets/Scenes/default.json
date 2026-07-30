@@ -1,130 +1,292 @@
 {
-  "version": 1,
-  "selectedEntity": 2,
   "entities": [
     {
       "id": 1,
-      "tag": { "name": "Floor" },
-      "transform": {
-        "position": [0.0, -1.0, 0.0],
-        "rotation": [0.0, 0.0, 0.0],
-        "scale": [8.0, 0.1, 8.0]
+      "material": {
+        "albedo": [
+          0.75,
+          0.75,
+          0.75
+        ],
+        "albedoMapPath": "",
+        "ambientOcclusion": 1.0,
+        "aoMapPath": "",
+        "emissive": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "emissiveMapPath": "",
+        "normalMapPath": "",
+        "shininess": 24.0,
+        "specularColor": [
+          0.20000000298023224,
+          0.20000000298023224,
+          0.20000000298023224
+        ],
+        "specularMapPath": ""
       },
       "meshRenderer": {
+        "castShadows": true,
         "meshType": "Cube",
         "modelPath": "",
-        "castShadows": true,
         "visible": true
       },
-      "material": {
-        "albedo": [0.75, 0.75, 0.75],
-        "specularColor": [0.2, 0.2, 0.2],
-        "shininess": 24.0,
-        "emissive": [0.0, 0.0, 0.0],
-        "ambientOcclusion": 1.0,
-        "albedoMapPath": "",
-        "normalMapPath": "",
-        "specularMapPath": "",
-        "emissiveMapPath": "",
-        "aoMapPath": ""
+      "tag": {
+        "name": "Floor"
+      },
+      "transform": {
+        "position": [
+          0.0,
+          -1.0,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          8.0,
+          0.10000000149011612,
+          8.0
+        ]
       }
     },
     {
       "id": 2,
-      "tag": { "name": "Cube" },
-      "transform": {
-        "position": [0.0, 0.0, 0.0],
-        "rotation": [-15.0, 30.0, 0.0],
-        "scale": [1.0, 1.0, 1.0]
+      "material": {
+        "albedo": [
+          1.0,
+          0.550000011920929,
+          0.20000000298023224
+        ],
+        "albedoMapPath": "guitar_set/M_Gitar.png",
+        "ambientOcclusion": 1.0,
+        "aoMapPath": "",
+        "emissive": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "emissiveMapPath": "",
+        "normalMapPath": "",
+        "shininess": 64.0,
+        "specularColor": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "specularMapPath": ""
       },
       "meshRenderer": {
+        "castShadows": true,
         "meshType": "Cube",
         "modelPath": "",
-        "castShadows": true,
         "visible": true
       },
-      "material": {
-        "albedo": [1.0, 0.55, 0.2],
-        "specularColor": [0.5, 0.5, 0.5],
-        "shininess": 64.0,
-        "emissive": [0.0, 0.0, 0.0],
-        "ambientOcclusion": 1.0,
-        "albedoMapPath": "",
-        "normalMapPath": "",
-        "specularMapPath": "",
-        "emissiveMapPath": "",
-        "aoMapPath": ""
+      "tag": {
+        "name": "Cube"
+      },
+      "transform": {
+        "position": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rotation": [
+          -15.0,
+          30.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
       }
     },
     {
       "id": 3,
-      "tag": { "name": "Directional Light" },
-      "transform": {
-        "position": [0.0, 4.0, 0.0],
-        "rotation": [0.0, 0.0, 0.0],
-        "scale": [1.0, 1.0, 1.0]
+      "spotLight": {
+        "color": [
+          0.550000011920929,
+          0.7200000286102295,
+          1.0
+        ],
+        "constantAttenuation": 1.0,
+        "direction": [
+          -0.46883317828178406,
+          -0.8746198415756226,
+          -0.12343353778123856
+        ],
+        "enabled": true,
+        "followCamera": true,
+        "innerCutoffDegrees": 12.5,
+        "intensity": 2.0,
+        "linearAttenuation": 0.09000000357627869,
+        "outerCutoffDegrees": 17.5,
+        "position": [
+          2.1835169792175293,
+          4.073404312133789,
+          0.5748723149299622
+        ],
+        "quadraticAttenuation": 0.03200000151991844
       },
-      "directionalLight": {
-        "direction": [-0.4, -1.0, -0.25],
-        "color": [0.72, 0.82, 1.0],
-        "intensity": 0.75,
-        "enabled": true
+      "tag": {
+        "name": "Spot Light"
+      },
+      "transform": {
+        "position": [
+          0.0,
+          1.149999976158142,
+          4.5
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
       }
     },
     {
-      "id": 4,
-      "tag": { "name": "Point Light" },
-      "transform": {
-        "position": [2.0, 1.8, 1.5],
-        "rotation": [0.0, 0.0, 0.0],
-        "scale": [1.0, 1.0, 1.0]
+      "hemisphereLight": {
+        "enabled": true,
+        "groundColor": [
+          0.18000000715255737,
+          0.14000000059604645,
+          0.10000000149011612
+        ],
+        "intensity": 0.3499999940395355,
+        "skyColor": [
+          0.4000000059604645,
+          0.550000011920929,
+          0.8500000238418579
+        ],
+        "upDirection": [
+          0.0,
+          1.0,
+          0.0
+        ]
       },
-      "pointLight": {
-        "position": [2.0, 1.8, 1.5],
-        "color": [1.0, 0.32, 0.08],
-        "intensity": 5.0,
-        "constantAttenuation": 1.0,
-        "linearAttenuation": 0.09,
-        "quadraticAttenuation": 0.032
+      "id": 4,
+      "tag": {
+        "name": "Hemisphere Light"
+      },
+      "transform": {
+        "position": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
       }
     },
     {
       "id": 5,
-      "tag": { "name": "Spot Light" },
-      "transform": {
-        "position": [0.0, 0.0, 0.0],
-        "rotation": [0.0, 0.0, 0.0],
-        "scale": [1.0, 1.0, 1.0]
+      "material": {
+        "albedo": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "albedoMapPath": "guitar_set/M_Gitar.png",
+        "ambientOcclusion": 1.0,
+        "aoMapPath": "",
+        "emissive": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "emissiveMapPath": "",
+        "normalMapPath": "",
+        "shininess": 32.0,
+        "specularColor": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "specularMapPath": ""
       },
-      "spotLight": {
-        "position": [0.0, 0.0, 0.0],
-        "direction": [0.0, 0.0, -1.0],
-        "color": [0.55, 0.72, 1.0],
-        "intensity": 2.0,
-        "innerCutoffDegrees": 12.5,
-        "outerCutoffDegrees": 17.5,
-        "constantAttenuation": 1.0,
-        "linearAttenuation": 0.09,
-        "quadraticAttenuation": 0.032,
-        "enabled": true,
-        "followCamera": true
+      "meshRenderer": {
+        "castShadows": true,
+        "meshType": "Model",
+        "modelPath": "guitar_set/guitar_set.obj",
+        "visible": true
+      },
+      "tag": {
+        "name": "guitar_set"
+      },
+      "transform": {
+        "position": [
+          -1.4190325736999512,
+          -0.3653677701950073,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          -0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
       }
     },
     {
-      "id": 6,
-      "tag": { "name": "Hemisphere Light" },
-      "transform": {
-        "position": [0.0, 0.0, 0.0],
-        "rotation": [0.0, 0.0, 0.0],
-        "scale": [1.0, 1.0, 1.0]
+      "directionalLight": {
+        "color": [
+          0.7200000286102295,
+          0.8199999928474426,
+          1.0
+        ],
+        "direction": [
+          -0.4000000059604645,
+          -1.0,
+          -0.25
+        ],
+        "enabled": true,
+        "intensity": 0.75
       },
-      "hemisphereLight": {
-        "skyColor": [0.4, 0.55, 0.85],
-        "groundColor": [0.18, 0.14, 0.1],
-        "intensity": 0.35,
-        "upDirection": [0.0, 1.0, 0.0],
-        "enabled": true
+      "id": 6,
+      "tag": {
+        "name": "Directional Light"
+      },
+      "transform": {
+        "position": [
+          0.0,
+          4.0,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
       }
     }
-  ]
+  ],
+  "selectedEntity": 3,
+  "version": 1
 }

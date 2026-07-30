@@ -94,6 +94,10 @@ void Window::setCursorCaptured(bool captured) {
         captured ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
 }
 
+void Window::setTitle(const std::string& title) {
+    glfwSetWindowTitle(m_window, title.c_str());
+}
+
 GLFWwindow* Window::nativeHandle() const {
     return m_window;
 }

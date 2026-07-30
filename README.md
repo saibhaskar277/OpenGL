@@ -19,7 +19,7 @@ OpenGL/
   Editor/                 ImGui editor (depends on Engine)
     App/                  EditorApp, EditorLayer, ImGuiLayer
     Viewport/             picking, gizmo, light debug markers
-    Panels/               Hierarchy, Inspector, Content Browser, Camera
+    Panels/               Hierarchy, Inspector, Project, Camera
   Sandbox/src/main.cpp    Thin entry → EditorApp
   Assets/                 Scenes, Textures, Models, Shaders
 CMakeLists.txt
@@ -28,13 +28,14 @@ CMakeLists.txt
 ## Features
 
 - ECS scene (entities + components)
-- Scene JSON save/load
-- Local asset browser for textures/models
+- Scene JSON as project assets (New / Open / Save / Save As)
+- Unity-style **Project** panel (recursive `Assets/` tree)
+- Drag-drop models into Hierarchy; drag textures onto material slots
 - Lighting: directional / point / spot / hemisphere
 - Shadows for directional, spot, and point lights
 - Textures: albedo, normal, specular, emissive, AO
 - OBJ/MTL model loading
-- ImGui editor: add cubes, edit transforms/materials/lights, assign textures
+- ImGui editor: picking, gizmos, light debug markers, camera panel
 
 ## Build (CMake — recommended)
 
@@ -71,14 +72,22 @@ sudo apt install build-essential cmake libgl1-mesa-dev libx11-dev libxrandr-dev 
 
 ## Editor usage
 
-- **Hold RMB** — fly camera look/move
-- **Hierarchy** — select entities; right-click → Add Cube / Delete
-- **Inspector** — transform, material colors, texture slots, lights
-- **Content Browser** — refresh and browse `Assets/Textures` + `Assets/Models`
-- **File → Save/Load Scene** — `Assets/Scenes/default.json`
-- **Edit → Add Cube** — spawn a cube entity
+- **RMB + WASD / Space / Shift** — fly camera
+- **Alt + LMB** — orbit around pivot
+- **Alt + MMB** (or **Alt + Shift + LMB**) — pan
+- **Alt + RMB** / **mouse wheel** — zoom (dolly)
+- **F** — focus selected entity
+- **LMB** — select mesh/light; drag gizmo to move
+- **Project** — browse `Assets/` tree; Refresh; Create Folder / Create Scene
+- **Drag model** from Project → Hierarchy — creates entity with Material texture slots
+- **Drag texture** from Project → Inspector map slots (or onto Hierarchy with a mesh selected for albedo)
+- **Double-click scene** in Project — open that scene
+- **File → New / Save / Save As / Open Scene** — scene session (title shows `*` when dirty)
+- **Hierarchy** — select entities; right-click → Add Cube / Light / Delete
+- **Inspector** — transform, material colors, exposed texture maps, lights
+- **Performance overlay** (top-left) — FPS, frame time, entity/mesh/light counts
 
-Drop texture files into `Assets/Textures`, hit **Refresh Assets**, then assign them in the Inspector.
+Place files under `Assets/Textures`, `Assets/Models`, or `Assets/Scenes`, then **Refresh** in Project. Nested folders are supported.
 
 ## Architecture
 

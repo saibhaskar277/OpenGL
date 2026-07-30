@@ -40,6 +40,16 @@ Entity Scene::createCube(const std::string& name) {
     return entity;
 }
 
+Entity Scene::createModel(const std::string& modelPath, const std::string& name) {
+    const Entity entity = createEntity(name);
+    MeshRendererComponent mesh;
+    mesh.meshType = MeshType::Model;
+    mesh.modelPath = modelPath;
+    m_registry.add<MeshRendererComponent>(entity, mesh);
+    m_registry.add<MaterialComponent>(entity);
+    return entity;
+}
+
 Entity Scene::createDirectionalLight(const std::string& name) {
     const Entity entity = createEntity(name);
     m_registry.get<TransformComponent>(entity).transform.setPosition(
