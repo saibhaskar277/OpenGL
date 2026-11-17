@@ -224,8 +224,8 @@
       },
       "meshRenderer": {
         "castShadows": true,
-        "meshType": "Model",
-        "modelPath": "guitar_set/guitar_set.obj",
+        "meshType": "Cube",
+        "modelPath": "",
         "visible": true
       },
       "tag": {
